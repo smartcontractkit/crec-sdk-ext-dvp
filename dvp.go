@@ -18,13 +18,12 @@ package dvp
 
 import (
 	"fmt"
+	"log/slog"
 	"math/big"
-	"os"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/rs/zerolog"
 
 	apiClient "github.com/smartcontractkit/crec-api-go/client"
 	"github.com/smartcontractkit/crec-api-go/services/dvp/gen/contract"
@@ -66,7 +65,7 @@ const (
 // Options defines the configuration for creating a new CREC DvP extension.
 type Options struct {
 	// Logger is an optional logger instance. If nil, a default logger is created.
-	Logger *zerolog.Logger
+	Logger *slog.Logger
 
 	// DvpCoordinatorAddress is the address of the DvP coordinator contract.
 	DvpCoordinatorAddress string
@@ -77,7 +76,7 @@ type Options struct {
 
 // Extension provides methods for preparing DvP settlement operations.
 type Extension struct {
-	logger                *zerolog.Logger
+	logger                *slog.Logger
 	dvpCoordinatorAddress common.Address
 	accountAddress        common.Address
 }
@@ -91,11 +90,10 @@ func New(opts *Options) (*Extension, error) {
 
 	logger := opts.Logger
 	if logger == nil {
-		lgr := zerolog.New(os.Stdout).With().Timestamp().Logger()
-		logger = &lgr
+		logger = slog.Default()
 	}
 
-	logger.Debug().Msg("Creating CREC DvP extension")
+	logger.Debug("Creating CREC DvP extension")
 
 	return &Extension{
 		logger:                logger,
@@ -133,9 +131,7 @@ func (e *Extension) PrepareProposeSettlementOperation(settlement *contract.Settl
 		return nil, fmt.Errorf("failed to hash settlement: %w", err)
 	}
 
-	e.logger.Trace().
-		Str("settlementHash", settlementHash.Hex()).
-		Msg("Preparing proposeSettlement operation")
+	e.logger.Debug("Preparing proposeSettlement operation", "settlementHash", settlementHash.Hex())
 
 	return e.prepareSettlementOperation(
 		"proposeSettlement",
@@ -158,9 +154,7 @@ func (e *Extension) PrepareProposeSettlementWithTokenApprovalOperation(settlemen
 		return nil, fmt.Errorf("failed to hash settlement: %w", err)
 	}
 
-	e.logger.Trace().
-		Str("settlementHash", settlementHash.Hex()).
-		Msg("Preparing proposeSettlement with token approval operation")
+	e.logger.Debug("Preparing proposeSettlement with token approval operation", "settlementHash", settlementHash.Hex())
 
 	approveTransaction, err := e.prepareTokenApproveTransaction(
 		settlement.TokenInfo.AssetTokenSourceAddress, settlement.TokenInfo.AssetTokenAmount,
@@ -197,9 +191,7 @@ func (e *Extension) PrepareProposeSettlementWithTokenHoldOperation(
 		return nil, fmt.Errorf("failed to hash settlement: %w", err)
 	}
 
-	e.logger.Trace().
-		Str("settlementHash", settlementHash.Hex()).
-		Msg("Preparing proposeSettlement with token hold operation")
+	e.logger.Debug("Preparing proposeSettlement with token hold operation", "settlementHash", settlementHash.Hex())
 
 	holdTransaction, err := e.prepareTokenHoldTransaction(
 		holdManagerAddress,
@@ -227,9 +219,7 @@ func (e *Extension) PrepareProposeSettlementWithTokenHoldOperation(
 // Parameters:
 //   - settlementHash: The hash of the settlement to be accepted.
 func (e *Extension) PrepareAcceptSettlementOperation(settlementHash common.Hash) (*transactTypes.Operation, error) {
-	e.logger.Trace().
-		Str("settlementHash", settlementHash.Hex()).
-		Msg("Preparing acceptSettlement operation")
+	e.logger.Debug("Preparing acceptSettlement operation", "settlementHash", settlementHash.Hex())
 
 	return e.prepareSettlementOperation(
 		"acceptSettlement",
@@ -245,9 +235,7 @@ func (e *Extension) PrepareAcceptSettlementOperation(settlementHash common.Hash)
 // Parameters:
 //   - settlementHash: The hash of the settlement to be executed.
 func (e *Extension) PrepareExecuteSettlementOperation(settlementHash common.Hash) (*transactTypes.Operation, error) {
-	e.logger.Trace().
-		Str("settlementHash", settlementHash.Hex()).
-		Msg("Preparing executeSettlement operation")
+	e.logger.Debug("Preparing executeSettlement operation", "settlementHash", settlementHash.Hex())
 
 	return e.prepareSettlementOperation(
 		"executeSettlement",
