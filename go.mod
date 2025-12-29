@@ -4,8 +4,8 @@ go 1.24
 
 require (
 	github.com/ethereum/go-ethereum v1.16.2
-	github.com/smartcontractkit/crec-api-go v0.3.7-0.20251125185111-95197465fc11
-	github.com/smartcontractkit/crec-sdk v0.0.0
+	github.com/smartcontractkit/crec-api-go v0.3.7-0.20251217212940-621e767055e3
+	github.com/smartcontractkit/crec-sdk v0.1.8
 	github.com/stretchr/testify v1.10.0
 )
 
@@ -38,7 +38,5 @@ require (
 	golang.org/x/sys v0.34.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/smartcontractkit/crec-sdk => ../crec-sdk
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
