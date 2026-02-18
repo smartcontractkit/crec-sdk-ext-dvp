@@ -14,9 +14,9 @@ var wasmBinary []byte
 var configTemplate []byte
 
 //go:embed CCIPDVPCoordinatorU.abi.json
-var dvpCoordinatorABI string
+var ccipdvpCoordinatorUABI string
 
-// Get returns the DVP extension watcher bundle.
+// Get returns the dvp watcher bundle.
 func Get() *crecbundle.Bundle {
 	return &crecbundle.Bundle{
 		Service:        "dvp",
@@ -28,18 +28,8 @@ func Get() *crecbundle.Bundle {
 }
 
 var contracts = []crecbundle.Contract{
-	{Name: "CCIPDVPCoordinator", ABI: dvpCoordinatorABI},
+	{Name: "CCIPDVPCoordinatorU", ABI: ccipdvpCoordinatorUABI},
 }
-
-// All DVP settlement events share the same params: (uint256 indexed settlementId, bytes32 indexed settlementHash).
-var settlementParamsSchema = json.RawMessage(`{
-	"type": "object",
-	"properties": {
-		"settlementId": {"type": "string", "description": "uint256 settlement ID"},
-		"settlementHash": {"type": "string", "description": "bytes32 settlement hash"}
-	},
-	"required": ["settlementId", "settlementHash"]
-}`)
 
 // DataSchema for events enriched with on-chain settlement details from getSettlement(bytes32).
 var settlementDataSchema = json.RawMessage(`{
@@ -96,10 +86,10 @@ var settlementDataSchema = json.RawMessage(`{
 }`)
 
 var events = []crecbundle.Event{
-	{Name: "SettlementOpened", TriggerContract: "CCIPDVPCoordinator", Description: "New settlement proposed", ParamsSchema: settlementParamsSchema, DataSchema: settlementDataSchema},
-	{Name: "SettlementAccepted", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement accepted by counterparty", ParamsSchema: settlementParamsSchema, DataSchema: settlementDataSchema},
-	{Name: "SettlementClosing", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement in closing process", ParamsSchema: settlementParamsSchema, DataSchema: settlementDataSchema},
-	{Name: "SettlementSettled", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement completed", ParamsSchema: settlementParamsSchema, DataSchema: settlementDataSchema},
-	{Name: "SettlementCanceling", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement being canceled", ParamsSchema: settlementParamsSchema, DataSchema: settlementDataSchema},
-	{Name: "SettlementCanceled", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement canceled", ParamsSchema: settlementParamsSchema, DataSchema: settlementDataSchema},
+	{Name: "SettlementOpened", TriggerContract: "CCIPDVPCoordinatorU", Description: "New settlement proposed", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementOpened"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementAccepted", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement accepted by counterparty", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementAccepted"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementClosing", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement in closing process", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementClosing"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementSettled", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement completed", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementSettled"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementCanceling", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement being canceled", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementCanceling"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementCanceled", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement canceled", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementCanceled"]), DataSchema: settlementDataSchema},
 }

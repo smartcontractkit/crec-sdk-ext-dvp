@@ -37,12 +37,12 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 		CourierURL:    "http://example.com",
 		Service:       ptr("dvp"),
 		DetectEventTriggerConfig: wfcommon.DetectEventTriggerConfig{
-			ContractName:       "CCIPDVPCoordinator",
+			ContractName:       "CCIPDVPCoordinatorU",
 			ContractEventNames: []string{"SettlementAccepted"},
 			ContractAddress:    "0xDVP",
 			ContractReaderConfig: wfcommon.ContractReaderConfig{
 				Contracts: map[string]wfcommon.ContractDef{
-					"CCIPDVPCoordinator": {
+					"CCIPDVPCoordinatorU": {
 						ContractABI: `[{"type":"event","name":"SettlementAccepted","inputs":[{"name":"settlementId","type":"uint256","indexed":true,"internalType":"uint256"},{"name":"settlementHash","type":"bytes32","indexed":true,"internalType":"bytes32"}],"anonymous":false}]`,
 					},
 				},

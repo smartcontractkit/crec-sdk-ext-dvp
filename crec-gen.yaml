@@ -1,0 +1,30 @@
+# DVP watcher generation config
+
+watcher:
+  service: "dvp"
+  module: "github.com/smartcontractkit/crec-sdk-ext-dvp/watcher"
+  output: "./watcher"
+
+contracts:
+  - name: CCIPDVPCoordinatorU
+    abi: ./watcher/bundle/CCIPDVPCoordinatorU.abi.json
+
+bundle_events:
+  - name: SettlementOpened
+    trigger_contract: CCIPDVPCoordinatorU
+    description: "New settlement initiated"
+  - name: SettlementAccepted
+    trigger_contract: CCIPDVPCoordinatorU
+    description: "Settlement accepted by counterparty"
+  - name: SettlementClosing
+    trigger_contract: CCIPDVPCoordinatorU
+    description: "Settlement in closing process"
+  - name: SettlementSettled
+    trigger_contract: CCIPDVPCoordinatorU
+    description: "Settlement completed successfully"
+  - name: SettlementCanceling
+    trigger_contract: CCIPDVPCoordinatorU
+    description: "Settlement being canceled"
+  - name: SettlementCanceled
+    trigger_contract: CCIPDVPCoordinatorU
+    description: "Settlement canceled"

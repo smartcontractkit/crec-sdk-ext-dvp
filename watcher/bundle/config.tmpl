@@ -1,26 +1,32 @@
-network: "{{ ((datasource "config").network) }}"
-chainID: "{{ ((datasource "config").chainId) }}"
-chainSelector: {{ ((datasource "config").chainSelector) }}
+{{- $config := datasource "config" -}}
+network: "{{ $config.network }}"
+chainID: "{{ $config.chainId }}"
+chainSelector: {{ $config.chainSelector }}
 workflowEventOtelEndpoint: ""
-courierURL: "{{ ((datasource "config").courierUrl) }}"
-service: "{{ ((datasource "config").service) }}"
-watcherID: "{{ ((datasource "config").watcherID) }}"
-workflowName: "{{ ((datasource "config").workflowName) }}"
+courierURL: "{{ $config.courierUrl }}"
+service: "{{ $config.service }}"
+watcherID: "{{ $config.watcherID }}"
+workflowName: "{{ $config.workflowName }}"
 detectEventTriggerConfig:
-  contractName: "{{ ((datasource "config").triggerContractName) }}"
-  contractAddress: "{{ ((datasource "config").triggerContractAddress) }}"
+  contractName: "{{ $config.contractName }}"
+  contractAddress: "{{ $config.contractAddress }}"
   contractEventNames:
-    - "{{ ((datasource "config").triggerEventName) }}"
+{{- range $i, $name := $config.eventNames }}
+    - "{{ $name }}"
+{{- end }}
   contractReaderConfig:
     contracts:
-{{- range ((datasource "config").contracts) }}
-      {{ .name }}:
-        contractABI: '{{ .abi }}'
-        {{- if eq .name ((datasource "config").triggerContractName) }}
+      {{ $config.contractName }}:
         configs:
-          {{ ((datasource "config").triggerEventName) }}: '{"chainSpecificName": "{{ ((datasource "config").triggerEventName) }}", "readType": "event"}'
+{{- range $i, $name := $config.eventNames }}
+          {{ $name }}: '{"chainSpecificName": "{{ $name }}", "readType": "event"}'
+{{- end }}
+        contractABI: '{{ $config.contractABI }}'
         contractPollingFilter:
-          genericEventNames: ["{{ ((datasource "config").triggerEventName) }}"]
+          genericEventNames:
+{{- range $i, $name := $config.eventNames }}
+            - "{{ $name }}"
+{{- end }}
           pollingFilter:
             logsPerBlock: 0
             maxLogsKept: 0
@@ -28,5 +34,3 @@ detectEventTriggerConfig:
             topic2: null
             topic3: null
             topic4: null
-        {{- end }}
-{{- end }}

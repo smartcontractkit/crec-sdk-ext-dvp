@@ -1,20 +1,16 @@
-# ==========================================================================
-# CRE WORKFLOW SETTINGS FILE
-# ==========================================================================
-# Workflow-specific settings for CRE CLI targets.
-# Each target defines user-workflow and workflow-artifacts groups.
-# Settings here override CRE Project Settings File values.
+{{- $config := datasource "config" -}}
+# CRE Workflow Settings File
 
 local-simulation:
   user-workflow:
-      workflow-name: "{{ if getenv "WF_NAME_OVERRIDE" }}{{ getenv "WF_NAME_OVERRIDE" }}{{ else }}{{ (datasource "config").workflowName }}{{ end }}"
+      workflow-name: "{{ if getenv "WF_NAME_OVERRIDE" }}{{ getenv "WF_NAME_OVERRIDE" }}{{ else }}{{ $config.workflowName }}{{ end }}"
   workflow-artifacts:
-    workflow-path: "./wasm/workflow.wasm"
-    config-path: "{{ if has (datasource "config") "configPath" }}{{ (datasource "config").configPath }}{{ else }}./config.yaml{{ end }}"
+    workflow-path: "./bundle/binary.wasm"
+    config-path: "{{ if has $config "configPath" }}{{ $config.configPath }}{{ else }}./config.yaml{{ end }}"
 
 staging:
   user-workflow:
-    workflow-name: "{{ if getenv "WF_NAME_OVERRIDE" }}{{ getenv "WF_NAME_OVERRIDE" }}{{ else }}{{ (datasource "config").workflowName }}{{ end }}"
+    workflow-name: "{{ if getenv "WF_NAME_OVERRIDE" }}{{ getenv "WF_NAME_OVERRIDE" }}{{ else }}{{ $config.workflowName }}{{ end }}"
   workflow-artifacts:
-    workflow-path: "./wasm/workflow.wasm"
-    config-path: "{{ if has (datasource "config") "configPath" }}{{ (datasource "config").configPath }}{{ else }}./config.yaml{{ end }}"
+    workflow-path: "./bundle/binary.wasm"
+    config-path: "{{ if has $config "configPath" }}{{ $config.configPath }}{{ else }}./config.yaml{{ end }}"

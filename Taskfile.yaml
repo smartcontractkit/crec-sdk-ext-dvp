@@ -58,7 +58,6 @@ tasks:
       - "watcher/bundle/*.abi.json"
       - "watcher/bundle/config.tmpl"
     generates:
-      - "watcher/wasm/workflow.wasm"
       - "watcher/bundle/binary.wasm"
 
   watcher:check:sizes:
