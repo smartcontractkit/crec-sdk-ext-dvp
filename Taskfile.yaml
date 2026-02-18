@@ -1,0 +1,248 @@
+version: "3"
+
+# =============================================================================
+# CREC SDK Extension: DVP - Taskfile
+# =============================================================================
+# Testing and watcher workflow management tasks.
+
+tasks:
+  default:
+    silent: true
+    desc: "List all available tasks"
+    cmds:
+      - task --list
+
+  # -------------------------------------------------------------
+  # ---------------- SDK Development Tasks ----------------------
+  # -------------------------------------------------------------
+
+  test:
+    silent: true
+    desc: "Run all tests"
+    cmds:
+      - go test ./...
+
+  deps:
+    silent: true
+    desc: "Update dependencies"
+    cmds:
+      - echo "📦 Updating deps..."
+      - go mod tidy
+      - go mod download
+      - echo "✅ Dependencies updated"
+
+  vendor:
+    silent: true
+    desc: "Update vendor directory"
+    cmds:
+      - echo "📦 Updating vendor directory..."
+      - go mod tidy
+      - go mod download
+      - go mod vendor
+      - echo "✅ Vendor directory updated"
+
+  # -------------------------------------------------------------
+  # ---------------- Watcher Bundle Tasks ----------------------
+  # -------------------------------------------------------------
+
+  watcher:build:
+    desc: "Build watcher WASM binary (BYOW pattern)"
+    silent: true
+    cmds:
+      - echo "🔧 Building watcher WASM binary..."
+      - cd watcher && make build
+      - echo "✅ Watcher bundle built"
+    sources:
+      - "watcher/**/*.go"
+      - "watcher/handler/**/*.go"
+      - "watcher/bundle/*.abi.json"
+      - "watcher/bundle/config.tmpl"
+    generates:
+      - "watcher/wasm/workflow.wasm"
+      - "watcher/bundle/binary.wasm"
+
+  watcher:check:sizes:
+    desc: "Check WASM binary and config sizes against CRE limits"
+    silent: true
+    vars:
+      WASM_LIMIT_MB: 100
+      WASM_COMPRESSED_LIMIT_MB: 20
+      CONFIG_LIMIT_KB: 50
+    cmds:
+      - |
+        WASM="watcher/bundle/binary.wasm"
+        if [ ! -f "$WASM" ]; then
+          echo "❌ WASM not found at $WASM — run 'task watcher:build' first"
+          exit 1
+        fi
+
+        WASM_BYTES=$(wc -c < "$WASM" | tr -d ' ')
+        WASM_MB=$(echo "scale=2; $WASM_BYTES / 1048576" | bc)
+        echo "WASM binary:       ${WASM_MB} MB  (limit: {{ .WASM_LIMIT_MB }} MB)"
+        if [ "$(echo "$WASM_MB > {{ .WASM_LIMIT_MB }}" | bc)" -eq 1 ]; then
+          echo "❌ WASM uncompressed exceeds limit"
+          exit 1
+        fi
+
+        COMPRESSED=$(mktemp)
+        brotli -c "$WASM" > "$COMPRESSED" 2>/dev/null
+        if [ $? -eq 0 ]; then
+          COMP_BYTES=$(wc -c < "$COMPRESSED" | tr -d ' ')
+          COMP_MB=$(echo "scale=2; $COMP_BYTES / 1048576" | bc)
+          echo "WASM compressed:   ${COMP_MB} MB  (limit: {{ .WASM_COMPRESSED_LIMIT_MB }} MB)"
+          if [ "$(echo "$COMP_MB > {{ .WASM_COMPRESSED_LIMIT_MB }}" | bc)" -eq 1 ]; then
+            rm -f "$COMPRESSED"
+            echo "❌ WASM compressed exceeds limit"
+            exit 1
+          fi
+        else
+          echo "⚠️  brotli not found — skipping compressed size check"
+        fi
+        rm -f "$COMPRESSED"
+
+        CONFIG_BYTES=0
+        for abi in watcher/bundle/*.abi.json; do
+          if [ -f "$abi" ]; then
+            SIZE=$(wc -c < "$abi" | tr -d ' ')
+            CONFIG_BYTES=$((CONFIG_BYTES + SIZE))
+            echo "  ABI $(basename $abi): ${SIZE} bytes"
+          fi
+        done
+        CONFIG_BYTES=$((CONFIG_BYTES + 500))
+        CONFIG_KB=$(echo "scale=2; $CONFIG_BYTES / 1024" | bc)
+        echo "Config estimate:   ${CONFIG_KB} KB  (limit: {{ .CONFIG_LIMIT_KB }} KB)"
+        if [ "$(echo "$CONFIG_KB > {{ .CONFIG_LIMIT_KB }}" | bc)" -eq 1 ]; then
+          echo "❌ Config estimate exceeds limit"
+          exit 1
+        fi
+
+        echo "✅ All sizes within CRE limits"
+
+  # -------------------------------------------------------------
+  # ---------------- Watcher Workflow Tasks ---------------------
+  # -------------------------------------------------------------
+
+  watcher:config:
+    desc: "Render watcher config.yaml and workflow.yaml via gomplate"
+    silent: true
+    vars:
+      VALUES_FILE: '{{ .VALUES_FILE | default "values/values.yaml" }}'
+      WF_NAME_OVERRIDE: '{{ .WF_NAME_OVERRIDE | default "" }}'
+    cmds:
+      - |
+        VALUES_PATH="watcher/{{ .VALUES_FILE }}"
+        if [ ! -f "$VALUES_PATH" ]; then
+          echo "❌ values file not found: $VALUES_PATH"
+          exit 1
+        fi
+
+        export WF_NAME_OVERRIDE="{{ .WF_NAME_OVERRIDE }}"
+
+        if [ -f "watcher/bundle/config.tmpl" ]; then
+          gomplate \
+            -d "config=$VALUES_PATH" \
+            -f watcher/bundle/config.tmpl \
+            -o watcher/config.yaml
+          echo "✅ config.yaml generated"
+        fi
+
+        if [ -f "watcher/workflow.tmpl" ]; then
+          gomplate \
+            -d "config=$VALUES_PATH" \
+            -f watcher/workflow.tmpl \
+            -o watcher/workflow.yaml
+          echo "✅ workflow.yaml generated"
+        fi
+
+  watcher:simulate:
+    desc: "Simulate watcher workflow with CRE CLI"
+    silent: true
+    vars:
+      TARGET: '{{ .TARGET | default "local-simulation" }}'
+      TX_HASH: '{{ .TX_HASH }}'
+      EVENT_INDEX: '{{ .EVENT_INDEX | default "0" }}'
+      TRIGGER_INDEX: '{{ .TRIGGER_INDEX | default "0" }}'
+    cmds:
+      - |
+        if [ -z "{{ .TX_HASH }}" ]; then
+          echo "❌ TX_HASH required. Usage: task watcher:simulate TX_HASH=0x..."
+          exit 1
+        fi
+        cd watcher && \
+        cre workflow simulate watcher-dvp \
+          --target {{ .TARGET }} \
+          --evm-tx-hash {{ .TX_HASH }} \
+          --evm-event-index {{ .EVENT_INDEX }} \
+          --non-interactive \
+          --trigger-index {{ .TRIGGER_INDEX }}
+
+  watcher:deploy:
+    desc: "Deploy watcher workflow to CRE"
+    silent: true
+    deps: [watcher:check:cre-api-key]
+    vars:
+      CRE_TARGET: '{{ .CRE_TARGET | default "staging" }}'
+      OWNER_LABEL: '{{ .OWNER_LABEL | default "crec-sdk-ext-dvp" }}'
+    cmds:
+      - |
+        cd watcher && \
+        cre workflow deploy watcher --target {{ .CRE_TARGET }} --owner-label {{ .OWNER_LABEL }} --yes
+
+  watcher:release:
+    desc: "Config and deploy watcher to CRE"
+    silent: true
+    vars:
+      VALUES_FILE: '{{ .VALUES_FILE | default "values/values.yaml" }}'
+      WF_NAME_OVERRIDE: '{{ .WF_NAME_OVERRIDE | default "" }}'
+    cmds:
+      - task: watcher:config
+        vars:
+          VALUES_FILE: "{{ .VALUES_FILE }}"
+          WF_NAME_OVERRIDE: "{{ .WF_NAME_OVERRIDE }}"
+      - task: watcher:deploy
+
+  watcher:clean:
+    desc: "Clean watcher workflow artifacts"
+    silent: true
+    cmds:
+      - |
+        cd watcher && \
+        rm -f binary.wasm.br.b64 binary.wasm.br config.yaml workflow.yaml .bin_url .cfg_url cre.yaml upload.log test.state.yaml && \
+        rm -rf wasm/
+
+  # -------------------------------------------------------------
+  # ---------------- CRE Support Tasks -------------------------
+  # -------------------------------------------------------------
+
+  watcher:check:cre-api-key:
+    desc: "Check if CRE_API_KEY environment variable is set"
+    internal: true
+    silent: true
+    cmds:
+      - |
+        if [ -z "${CRE_API_KEY:-}" ]; then
+          echo "⚠️  WARNING: CRE_API_KEY environment variable is not set"
+          echo "   Workflow deployment requires CRE_API_KEY (or 'cre login') to authenticate with CRE."
+          exit 1
+        fi
+
+  watcher:check:cre-eth-private-key:
+    desc: "Check if CRE_ETH_PRIVATE_KEY environment variable is set"
+    internal: true
+    silent: true
+    cmds:
+      - |
+        if [ -z "${CRE_ETH_PRIVATE_KEY:-}" ]; then
+          echo "❌ CRE_ETH_PRIVATE_KEY environment variable is not set"
+          exit 1
+        fi
+
+  watcher:account:link-key:
+    desc: "Link wallet address to CRE account"
+    silent: true
+    deps: [watcher:check:cre-api-key, watcher:check:cre-eth-private-key]
+    vars:
+      CRE_TARGET: '{{ .CRE_TARGET | default "staging" }}'
+      OWNER_LABEL: '{{ .OWNER_LABEL | default "crec-sdk-ext-dvp" }}'
+    cmds:
+      - cre account link-key --target {{ .CRE_TARGET }} --owner-label "{{ .OWNER_LABEL }}"

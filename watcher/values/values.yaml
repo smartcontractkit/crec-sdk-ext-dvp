@@ -1,0 +1,35 @@
+# ==========================================================================
+# WATCHER VALUES: CCIPDVPCoordinator
+# ==========================================================================
+# Default configuration for the DVP event listener.
+# Override via VALUES_FILE when running task watcher:config.
+
+# ==========================================================================
+# WORKFLOW.YAML VALUES
+# ==========================================================================
+# NOTE: workflowName has a maximum of 32 characters
+workflowName: "watcher-dvp"
+
+# ==========================================================================
+# CONFIG.YAML VALUES
+# ==========================================================================
+
+# Network and chain configuration
+network: "evm"
+chainId: "11155111"
+chainSelector: 3379446385462418246
+
+# Trigger configuration
+triggerContractName: "CCIPDVPCoordinator"
+triggerContractAddress: "0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1"
+triggerEventName: "SettlementAccepted"
+
+# CREC service configuration
+courierUrl: "http://localhost:8080"
+service: "dvp"
+watcherID: "00000000-0000-0000-0000-000000000000"
+
+# Contracts configuration
+contracts:
+  - name: "CCIPDVPCoordinator"
+    abi: '[{"type":"event","name":"SettlementOpened","inputs":[{"name":"settlementId","type":"uint256","indexed":true,"internalType":"uint256"},{"name":"settlementHash","type":"bytes32","indexed":true,"internalType":"bytes32"}],"anonymous":false},{"type":"event","name":"SettlementAccepted","inputs":[{"name":"settlementId","type":"uint256","indexed":true,"internalType":"uint256"},{"name":"settlementHash","type":"bytes32","indexed":true,"internalType":"bytes32"}],"anonymous":false},{"type":"event","name":"SettlementClosing","inputs":[{"name":"settlementId","type":"uint256","indexed":true,"internalType":"uint256"},{"name":"settlementHash","type":"bytes32","indexed":true,"internalType":"bytes32"}],"anonymous":false},{"type":"event","name":"SettlementSettled","inputs":[{"name":"settlementId","type":"uint256","indexed":true,"internalType":"uint256"},{"name":"settlementHash","type":"bytes32","indexed":true,"internalType":"bytes32"}],"anonymous":false},{"type":"event","name":"SettlementCanceling","inputs":[{"name":"settlementId","type":"uint256","indexed":true,"internalType":"uint256"},{"name":"settlementHash","type":"bytes32","indexed":true,"internalType":"bytes32"}],"anonymous":false},{"type":"event","name":"SettlementCanceled","inputs":[{"name":"settlementId","type":"uint256","indexed":true,"internalType":"uint256"},{"name":"settlementHash","type":"bytes32","indexed":true,"internalType":"bytes32"}],"anonymous":false}]'
