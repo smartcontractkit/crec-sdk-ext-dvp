@@ -1,0 +1,16 @@
+{{- $config := datasource "config" -}}
+# CRE Workflow Settings File
+
+local-simulation:
+  user-workflow:
+      workflow-name: "{{ if getenv "WF_NAME_OVERRIDE" }}{{ getenv "WF_NAME_OVERRIDE" }}{{ else }}{{ $config.workflowName }}{{ end }}"
+  workflow-artifacts:
+    workflow-path: "./bundle/binary.wasm"
+    config-path: "{{ if has $config "configPath" }}{{ $config.configPath }}{{ else }}./config.yaml{{ end }}"
+
+staging:
+  user-workflow:
+    workflow-name: "{{ if getenv "WF_NAME_OVERRIDE" }}{{ getenv "WF_NAME_OVERRIDE" }}{{ else }}{{ $config.workflowName }}{{ end }}"
+  workflow-artifacts:
+    workflow-path: "./bundle/binary.wasm"
+    config-path: "{{ if has $config "configPath" }}{{ $config.configPath }}{{ else }}./config.yaml{{ end }}"
