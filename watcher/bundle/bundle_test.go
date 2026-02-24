@@ -17,10 +17,6 @@ func TestBundle_Get(t *testing.T) {
 		assert.Equal(t, "dvp", b.Service)
 	})
 
-	t.Run("ConfigTemplate", func(t *testing.T) {
-		assert.NotEmpty(t, b.ConfigTemplate)
-	})
-
 	t.Run("Contracts", func(t *testing.T) {
 		require.Len(t, b.Contracts, 1)
 		assert.Equal(t, "CCIPDVPCoordinatorU", b.Contracts[0].Name)

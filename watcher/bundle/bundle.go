@@ -10,19 +10,15 @@ import (
 //go:embed binary.wasm
 var wasmBinary []byte
 
-//go:embed config.tmpl
-var configTemplate []byte
-
 //go:embed CCIPDVPCoordinatorU.abi.json
 var ccipdvpCoordinatorUABI string
 
 // Get returns the dvp watcher bundle.
 func Get() *crecbundle.Bundle {
 	return &crecbundle.Bundle{
-		Service:        "dvp",
-		WasmBinary:     wasmBinary,
-		ConfigTemplate: configTemplate,
-		Contracts:      contracts,
+		Service:    "dvp",
+		WasmBinary: wasmBinary,
+		Contracts:  contracts,
 		Events:         events,
 	}
 }
