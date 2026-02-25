@@ -16,6 +16,14 @@ tasks:
   # ---------------- SDK Development Tasks ----------------------
   # -------------------------------------------------------------
 
+  tools:
+    silent: true
+    desc: "Install required build tools"
+    cmds:
+      - echo "📦 Installing build tools..."
+      - brew install brotli
+      - echo "✅ Tools installed"
+
   test:
     silent: true
     desc: "Run all tests"
@@ -59,6 +67,7 @@ tasks:
       - "watcher/bundle/config.tmpl"
     generates:
       - "watcher/bundle/binary.wasm"
+      - "watcher/bundle/binary.wasm.br.b64"
 
   watcher:check:sizes:
     desc: "Check WASM binary and config sizes against CRE limits"
