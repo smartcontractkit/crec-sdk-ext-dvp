@@ -3,7 +3,6 @@ module github.com/smartcontractkit/crec-sdk-ext-dvp
 go 1.25.3
 
 require (
-	github.com/andybalholm/brotli v1.2.0
 	github.com/ethereum/go-ethereum v1.16.8
 	github.com/smartcontractkit/chainlink-protos/cre/go v0.0.0-20251211142334-5c3421fe2c8d
 	github.com/smartcontractkit/cre-sdk-go v1.2.0

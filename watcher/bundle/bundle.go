@@ -1,21 +1,14 @@
 package bundle
 
 import (
-	"bytes"
 	_ "embed"
-	"encoding/base64"
 	"encoding/json"
-	"io"
-	"strings"
 
-	"github.com/andybalholm/brotli"
 	crecbundle "github.com/smartcontractkit/crec-sdk/extension/bundle"
 )
 
 //go:embed binary.wasm.br.b64
 var wasmBinaryBrB64 string
-
-var wasmBinary = decodeCompressedBinary(wasmBinaryBrB64)
 
 //go:embed CCIPDVPCoordinatorU.abi.json
 var ccipdvpCoordinatorUABI string
@@ -24,7 +17,7 @@ var ccipdvpCoordinatorUABI string
 func Get() *crecbundle.Bundle {
 	return &crecbundle.Bundle{
 		Service:    "dvp",
-		WasmBinary: wasmBinary,
+		WasmBinary: []byte(wasmBinaryBrB64),
 		Contracts:  contracts,
 		Events:         events,
 	}
@@ -95,20 +88,4 @@ var events = []crecbundle.Event{
 	{Name: "SettlementSettled", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement completed", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementSettled"]), DataSchema: settlementDataSchema},
 	{Name: "SettlementCanceling", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement being canceled", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementCanceling"]), DataSchema: settlementDataSchema},
 	{Name: "SettlementCanceled", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement canceled", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementCanceled"]), DataSchema: settlementDataSchema},
-}
-
-func decodeCompressedBinary(encoded string) []byte {
-	data := strings.TrimSpace(encoded)
-	if data == "" {
-		return nil
-	}
-	compressed, err := base64.StdEncoding.DecodeString(data)
-	if err != nil {
-		panic("crec bundle: invalid base64 wasm: " + err.Error())
-	}
-	raw, err := io.ReadAll(brotli.NewReader(bytes.NewReader(compressed)))
-	if err != nil {
-		panic("crec bundle: decompress wasm: " + err.Error())
-	}
-	return raw
 }
