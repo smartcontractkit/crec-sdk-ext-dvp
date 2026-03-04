@@ -22,7 +22,7 @@ import (
 	httpmock "github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http/mock"
 	"github.com/smartcontractkit/cre-sdk-go/cre/testutils"
 
-	wfcommon "github.com/smartcontractkit/cre-workflow-utils"
+	wfcommon "github.com/smartcontractkit/crec-workflow-utils"
 	wf "github.com/smartcontractkit/crec-sdk-ext-dvp/watcher/handler"
 )
 
@@ -176,7 +176,7 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 		if req.Method != "POST" {
 			return nil, fmt.Errorf("expected POST, got %s", req.Method)
 		}
-		expectedURL := "http://example.com/system/onchain-watcher-events"
+		expectedURL := "http://example.com/system/v1/onchain-watcher-events"
 		if req.Url != expectedURL {
 			return nil, fmt.Errorf("unexpected url %q (expected %q)", req.Url, expectedURL)
 		}

@@ -14,7 +14,7 @@ import (
 	"github.com/smartcontractkit/cre-sdk-go/capabilities/blockchain/evm"
 	"github.com/smartcontractkit/cre-sdk-go/cre"
 
-	wfcommon "github.com/smartcontractkit/cre-workflow-utils"
+	wfcommon "github.com/smartcontractkit/crec-workflow-utils"
 )
 
 // Minimal ABI for getSettlement(bytes32) returning the Settlement struct.
