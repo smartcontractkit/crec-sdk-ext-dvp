@@ -186,8 +186,6 @@ github.com/smartcontractkit/cre-sdk-go/capabilities/blockchain/evm v0.10.0 h1:G0
 github.com/smartcontractkit/cre-sdk-go/capabilities/blockchain/evm v0.10.0/go.mod h1:VVJ4mvA7wOU1Ic5b/vTaBMHEUysyxd0gdPPXkAu8CmY=
 github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http v0.10.0 h1:nP6PVWrrTIICvjwQuFitsQecQWbqpPaYzaTEjx92eTQ=
 github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http v0.10.0/go.mod h1:M83m3FsM1uqVu06OO58mKUSZJjjH8OGJsmvFpFlRDxI=
-github.com/smartcontractkit/cre-workflow-utils v0.0.10 h1:CBkj3IFv3cFqPjMNG/SjsE/eYfdid723hXbkP3oY+3I=
-github.com/smartcontractkit/cre-workflow-utils v0.0.10/go.mod h1:Tt1kAUowUSE62B0V6yyXhsLJ5oLMwPALzTfo/7Eod30=
 github.com/smartcontractkit/crec-api-go v0.4.10 h1:2OfiSD5EoFYQEzeyX6whNi9Dm3zVx2W9l/3bwu17cbk=
 github.com/smartcontractkit/crec-api-go v0.4.10/go.mod h1:TuDZiMoStNQBv3HYA5pqpwPyecbMh8p5momO4b1A9Eg=
 github.com/smartcontractkit/crec-sdk v0.4.10 h1:L0mte8lyCFAr8lAjMGlShBnZ86fGTaG4ctWHVm6WUi8=

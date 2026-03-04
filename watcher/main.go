@@ -8,7 +8,7 @@ import (
 	"github.com/smartcontractkit/cre-sdk-go/cre"
 	"github.com/smartcontractkit/cre-sdk-go/cre/wasm"
 
-	workflows "github.com/smartcontractkit/cre-workflow-utils"
+	workflows "github.com/smartcontractkit/crec-workflow-utils"
 	wf "github.com/smartcontractkit/crec-sdk-ext-dvp/watcher/handler"
 )
 
