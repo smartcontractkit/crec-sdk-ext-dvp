@@ -10,7 +10,7 @@ require (
 	github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http v0.10.0
 	github.com/smartcontractkit/crec-api-go v0.4.10
 	github.com/smartcontractkit/crec-sdk v0.4.10
-	github.com/smartcontractkit/crec-workflow-utils v0.0.13
+	github.com/smartcontractkit/crec-workflow-utils v0.0.15
 	github.com/stretchr/testify v1.11.1
 )
 
