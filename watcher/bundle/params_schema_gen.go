@@ -4,7 +4,8 @@ package bundle
 
 import "encoding/json"
 
-// ParamsSchemas maps event names to their auto-generated JSON Schema.
+// ParamsSchemas maps event names to their auto-generated JSON Schema
+// derived from the Solidity ABI event parameters.
 var ParamsSchemas = map[string]json.RawMessage{
 	"SettlementOpened": json.RawMessage(`
 		{

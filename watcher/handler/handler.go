@@ -62,7 +62,7 @@ const DVPGetSettlementABI = `[
 
 // OnLog processes DVP settlement logs:
 // - Performs an EVM view call getSettlement(bytes32) and decodes the returned Settlement for metadata
-// - Composes a verifiable event, signs it, and posts it to Courier
+// - Composes a verifiable event, signs it, and posts it to the CREC API
 func OnLog(cfg *wfcommon.Config, rt cre.Runtime, payload *evm.Log) (string, error) {
 	selector := cfg.ChainSelector
 

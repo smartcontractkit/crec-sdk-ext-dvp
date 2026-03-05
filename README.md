@@ -26,13 +26,12 @@ This extension provides utilities for preparing DvP (Delivery versus Payment) se
 
 ```go
 import (
-    "github.com/smartcontractkit/crec-sdk-ext-dvp"
+    "github.com/smartcontractkit/crec-sdk-ext-dvp/operations"
 )
 
-// Create the DVP extension
-ext, err := dvp.New(&dvp.Options{
-    DvpCoordinatorAddress: "0x...",  // DVP Coordinator contract address
-    AccountAddress:        "0x...",  // Your account address
+ext, err := operations.New(&operations.Options{
+    CCIPDVPCoordinatorUAddress: "0x...",
+    AccountAddress:             "0x...",
 })
 if err != nil {
     log.Fatal(err)
@@ -43,31 +42,44 @@ if err != nil {
 
 ```go
 import (
-    "github.com/smartcontractkit/crec-api-go/services/dvp/gen/contract"
+    "github.com/smartcontractkit/crec-sdk-ext-dvp/currency"
+    "github.com/smartcontractkit/crec-sdk-ext-dvp/events"
     "github.com/ethereum/go-ethereum/common"
     "math/big"
 )
 
 // Create settlement details
-settlement := &contract.Settlement{
+settlement := &events.Settlement{
     SettlementId: big.NewInt(1),
-    PartyInfo: contract.PartyInfo{
+    PartyInfo: events.PartyInfo{
         BuyerSourceAddress:       common.HexToAddress("0xBuyer..."),
         BuyerDestinationAddress:  common.HexToAddress("0xBuyer..."),
         SellerSourceAddress:      common.HexToAddress("0xSeller..."),
         SellerDestinationAddress: common.HexToAddress("0xSeller..."),
         ExecutorAddress:          common.HexToAddress("0xExecutor..."),
     },
-    TokenInfo: contract.TokenInfo{
-        PaymentTokenAmount:           big.NewInt(1000000),
-        AssetTokenAmount:             big.NewInt(1000000000000000000),
-        PaymentTokenSourceAddress:    common.HexToAddress("0xPaymentToken..."),
-        AssetTokenSourceAddress:      common.HexToAddress("0xAssetToken..."),
-        PaymentTokenType:             dvp.TokenTypeERC20,
-        AssetTokenType:               dvp.TokenTypeERC20,
-        PaymentCurrency:              dvp.CurrencyMap["USD"],
+    TokenInfo: events.TokenInfo{
+        PaymentTokenSourceAddress:      common.HexToAddress("0xPaymentToken..."),
+        PaymentTokenDestinationAddress: common.HexToAddress("0xPaymentToken..."),
+        AssetTokenSourceAddress:        common.HexToAddress("0xAssetToken..."),
+        AssetTokenDestinationAddress:   common.HexToAddress("0xAssetToken..."),
+        PaymentCurrency:                currency.Map["USD"],
+        PaymentTokenAmount:             big.NewInt(1000000),
+        AssetTokenAmount:               big.NewInt(1000000000000000000),
+        PaymentTokenType:               events.TokenTypeERC20,
+        AssetTokenType:                 events.TokenTypeERC20,
     },
-    // ... other fields
+    DeliveryInfo: events.DeliveryInfo{
+        PaymentSourceChainSelector:      uint64(1),
+        PaymentDestinationChainSelector: uint64(1),
+        AssetSourceChainSelector:        uint64(1),
+        AssetDestinationChainSelector:   uint64(1),
+    },
+    SecretHash:           common.Hash{},
+    ExecuteAfter:         big.NewInt(0),
+    Expiration:           big.NewInt(9999999999),
+    CcipCallbackGasLimit: 0,
+    Data:                 []byte{},
 }
 
 // Option 1: Propose without token approval (assumes approval exists)
@@ -84,14 +96,14 @@ op, err := ext.PrepareProposeSettlementWithTokenHoldOperation(settlement, holdMa
 
 ```go
 settlementHash := common.HexToHash("0x...")
-op, err := ext.PrepareAcceptSettlementOperation(settlementHash)
+op, err := ext.PrepareAcceptSettlementOperation([32]byte(settlementHash))
 ```
 
 ### Executing a Settlement
 
 ```go
 settlementHash := common.HexToHash("0x...")
-op, err := ext.PrepareExecuteSettlementOperation(settlementHash)
+op, err := ext.PrepareExecuteSettlementOperation([32]byte(settlementHash))
 ```
 
 ### Computing Settlement Hash
@@ -122,13 +134,14 @@ fmt.Printf("Settlement hash: %s\n", hash.Hex())
 
 ## Currency Codes
 
-The `CurrencyMap` provides ISO 4217 currency codes for off-chain payment specifications:
+The `currency` package provides ISO 4217 currency codes for off-chain payment specifications:
 
 ```go
-// Example: Get USD currency code
-usdCode := dvp.CurrencyMap["USD"]  // Returns 147
+import "github.com/smartcontractkit/crec-sdk-ext-dvp/currency"
+
+usdCode := currency.Map["USD"]  // Returns 147
 ```
 
 ## License
 
-See [LICENSE](LICENSE) for details.
+[LICENSE](LICENSE.md)
