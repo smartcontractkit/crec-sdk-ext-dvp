@@ -1,7 +1,7 @@
-package events
+package currency
 
-// CurrencyMap maps ISO 4217 currency codes to their numeric identifiers for DvP settlements.
-var CurrencyMap = map[string]uint8{
+// Map maps ISO 4217 currency codes to their numeric identifiers for DvP settlements.
+var Map = map[string]uint8{
 	"None": 0, "AED": 1, "AFN": 2, "ALL": 3, "AMD": 4, "ANG": 5, "AOA": 6, "ARS": 7, "AUD": 8, "AWG": 9,
 	"AZN": 10, "BAM": 11, "BBD": 12, "BDT": 13, "BGN": 14, "BHD": 15, "BIF": 16, "BMD": 17, "BND": 18, "BOB": 19,
 	"BOV": 20, "BRL": 21, "BSD": 22, "BTN": 23, "BWP": 24, "BYN": 25, "BZD": 26, "CAD": 27, "CDF": 28, "CHE": 29,

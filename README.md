@@ -42,6 +42,7 @@ if err != nil {
 
 ```go
 import (
+    "github.com/smartcontractkit/crec-sdk-ext-dvp/currency"
     "github.com/smartcontractkit/crec-sdk-ext-dvp/events"
     "github.com/ethereum/go-ethereum/common"
     "math/big"
@@ -62,7 +63,7 @@ settlement := &events.Settlement{
         PaymentTokenDestinationAddress: common.HexToAddress("0xPaymentToken..."),
         AssetTokenSourceAddress:        common.HexToAddress("0xAssetToken..."),
         AssetTokenDestinationAddress:   common.HexToAddress("0xAssetToken..."),
-        PaymentCurrency:                events.CurrencyMap["USD"],
+        PaymentCurrency:                currency.Map["USD"],
         PaymentTokenAmount:             big.NewInt(1000000),
         AssetTokenAmount:               big.NewInt(1000000000000000000),
         PaymentTokenType:               events.TokenTypeERC20,
@@ -133,12 +134,12 @@ fmt.Printf("Settlement hash: %s\n", hash.Hex())
 
 ## Currency Codes
 
-The `CurrencyMap` in the events package provides ISO 4217 currency codes for off-chain payment specifications:
+The `currency` package provides ISO 4217 currency codes for off-chain payment specifications:
 
 ```go
-import "github.com/smartcontractkit/crec-sdk-ext-dvp/events"
+import "github.com/smartcontractkit/crec-sdk-ext-dvp/currency"
 
-usdCode := events.CurrencyMap["USD"]  // Returns 147
+usdCode := currency.Map["USD"]  // Returns 147
 ```
 
 ## License

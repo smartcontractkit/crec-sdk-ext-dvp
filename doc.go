@@ -2,7 +2,8 @@
 //
 // This package is organized into sub-packages:
 //
-//   - dvp/events:     Event types, Settlement struct, constants (TokenType, CurrencyMap), and decoders.
+//   - dvp/events:     Event types, Settlement struct, constants (TokenType), and decoders.
+//   - dvp/currency:   ISO 4217 currency code mapping for DvP settlements.
 //   - dvp/operations: Extension client for preparing on-chain operations.
 //
 // The root dvp package provides [DecodeFromEvent] for SDK consumers to decode

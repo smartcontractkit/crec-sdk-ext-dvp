@@ -7,6 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 
+	"github.com/smartcontractkit/crec-sdk-ext-dvp/currency"
 	"github.com/smartcontractkit/crec-sdk-ext-dvp/events"
 	"github.com/smartcontractkit/crec-sdk-ext-dvp/operations"
 )
@@ -67,7 +68,7 @@ func TestOperations_HashSettlement(t *testing.T) {
 			PaymentTokenDestinationAddress: common.HexToAddress("0x0000000000000000000000000000000000000000"),
 			AssetTokenSourceAddress:        common.HexToAddress("0xA5F12FDA3e8B7209a3019141F105e5DB43445B86"),
 			AssetTokenDestinationAddress:   common.HexToAddress("0xA5F12FDA3e8B7209a3019141F105e5DB43445B86"),
-			PaymentCurrency:                events.CurrencyMap["USD"],
+			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(1000000),
 			AssetTokenAmount:               big.NewInt(1000000000000000000),
 			PaymentTokenType:               events.TokenTypeNone,
@@ -112,7 +113,7 @@ func TestOperations_PrepareProposeSettlementOperation(t *testing.T) {
 			PaymentTokenDestinationAddress: common.HexToAddress("0x0000000000000000000000000000000000000000"),
 			AssetTokenSourceAddress:        common.HexToAddress("0x3333333333333333333333333333333333333333"),
 			AssetTokenDestinationAddress:   common.HexToAddress("0x3333333333333333333333333333333333333333"),
-			PaymentCurrency:                events.CurrencyMap["USD"],
+			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(100),
 			AssetTokenAmount:               big.NewInt(1000),
 			PaymentTokenType:               events.TokenTypeNone,
@@ -159,7 +160,7 @@ func TestOperations_PrepareProposeSettlementWithTokenApprovalOperation(t *testin
 			PaymentTokenDestinationAddress: common.HexToAddress("0x0000000000000000000000000000000000000000"),
 			AssetTokenSourceAddress:        common.HexToAddress("0x3333333333333333333333333333333333333333"),
 			AssetTokenDestinationAddress:   common.HexToAddress("0x3333333333333333333333333333333333333333"),
-			PaymentCurrency:                events.CurrencyMap["USD"],
+			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(100),
 			AssetTokenAmount:               big.NewInt(1000),
 			PaymentTokenType:               events.TokenTypeNone,
@@ -208,7 +209,7 @@ func TestOperations_PrepareProposeSettlementWithTokenHoldOperation(t *testing.T)
 			PaymentTokenDestinationAddress: common.HexToAddress("0x0000000000000000000000000000000000000000"),
 			AssetTokenSourceAddress:        common.HexToAddress("0x3333333333333333333333333333333333333333"),
 			AssetTokenDestinationAddress:   common.HexToAddress("0x3333333333333333333333333333333333333333"),
-			PaymentCurrency:                events.CurrencyMap["USD"],
+			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(100),
 			AssetTokenAmount:               big.NewInt(1000),
 			PaymentTokenType:               events.TokenTypeNone,
@@ -257,7 +258,7 @@ func TestOperations_PrepareProposeSettlementWithTokenHoldOperation_NonERC3643Fai
 			PaymentTokenDestinationAddress: common.HexToAddress("0x0000000000000000000000000000000000000000"),
 			AssetTokenSourceAddress:        common.HexToAddress("0x3333333333333333333333333333333333333333"),
 			AssetTokenDestinationAddress:   common.HexToAddress("0x3333333333333333333333333333333333333333"),
-			PaymentCurrency:                events.CurrencyMap["USD"],
+			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(100),
 			AssetTokenAmount:               big.NewInt(1000),
 			PaymentTokenType:               events.TokenTypeNone,
@@ -347,7 +348,7 @@ func TestOperations_PrepareExecuteSettlementOperation(t *testing.T) {
 	require.Equal(t, common.HexToAddress("0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE"), op.Transactions[0].To)
 }
 
-func TestEvents_CurrencyMap(t *testing.T) {
+func TestCurrency_Map(t *testing.T) {
 	tests := []struct {
 		code     string
 		expected uint8
@@ -360,7 +361,7 @@ func TestEvents_CurrencyMap(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.code, func(t *testing.T) {
-			require.Equal(t, tt.expected, events.CurrencyMap[tt.code])
+			require.Equal(t, tt.expected, currency.Map[tt.code])
 		})
 	}
 }
