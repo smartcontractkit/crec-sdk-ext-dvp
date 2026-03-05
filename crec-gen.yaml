@@ -5,9 +5,23 @@ watcher:
   module: "github.com/smartcontractkit/crec-sdk-ext-dvp/watcher"
   output: "./watcher"
 
+module: "github.com/smartcontractkit/crec-sdk-ext-dvp"
+
+output:
+  events: "./events"
+  operations: "./operations"
+  schemas: "./watcher/bundle"
+  values: "./watcher/values"
+  decode: "./"
+
 contracts:
   - name: CCIPDVPCoordinatorU
     abi: ./watcher/bundle/CCIPDVPCoordinatorU.abi.json
+    skip_methods:
+      - ccipReceive
+      - getRouter
+      - getSettlement
+      - recoverFunds
 
 bundle_events:
   - name: SettlementOpened

@@ -1,4 +1,4 @@
-package dvp
+package events
 
 // CurrencyMap maps ISO 4217 currency codes to their numeric identifiers for DvP settlements.
 var CurrencyMap = map[string]uint8{
@@ -22,4 +22,3 @@ var CurrencyMap = map[string]uint8{
 	"XBC": 163, "XBD": 164, "XCD": 165, "XDR": 166, "XOF": 167, "XPD": 168, "XPF": 169, "XPT": 170, "XSU": 171,
 	"XTS": 172, "XUA": 173, "XXX": 174, "YER": 175, "ZAR": 176, "ZMW": 177, "ZWG": 178,
 }
-
