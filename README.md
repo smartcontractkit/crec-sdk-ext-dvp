@@ -142,6 +142,24 @@ import "github.com/smartcontractkit/crec-sdk-ext-dvp/currency"
 usdCode := currency.Map["USD"]  // Returns 147
 ```
 
+## Decoding Events
+
+Decode typed events from raw CREC watcher events:
+
+```go
+import dvp "github.com/smartcontractkit/crec-sdk-ext-dvp"
+
+decoded, err := dvp.DecodeFromEvent(ctx, event)
+switch decoded.EventName() {
+case events.EventSettlementOpened:
+    ev := decoded.ConcreteEvent.(*events.SettlementOpened)
+    fmt.Printf("Settlement %s opened\n", ev.SettlementId)
+case events.EventSettlementSettled:
+    ev := decoded.ConcreteEvent.(*events.SettlementSettled)
+    fmt.Printf("Settlement %s settled\n", ev.SettlementId)
+}
+```
+
 ## License
 
-[LICENSE](LICENSE.md)
+[MIT](LICENSE.md)
