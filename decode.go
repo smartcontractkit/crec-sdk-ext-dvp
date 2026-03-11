@@ -21,6 +21,7 @@ import (
 //	PaymentRequests    []workflows.PaymentRequest
 type DecodedEvent struct {
 	apiClient.WatcherEventPayload
+	// ConcreteEvent is the decoded event struct matching the blockchain event type.
 	ConcreteEvent events.ConcreteEvent
 	// TODO: Add enrichment fields from your handler's reference data.
 }
