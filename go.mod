@@ -4,12 +4,12 @@ go 1.25.3
 
 require (
 	github.com/ethereum/go-ethereum v1.16.8
-	github.com/smartcontractkit/chainlink-protos/cre/go v0.0.0-20251211142334-5c3421fe2c8d
+	github.com/smartcontractkit/chainlink-protos/cre/go v0.0.0-20260210221717-2546aed27ebe
 	github.com/smartcontractkit/cre-sdk-go v1.2.0
 	github.com/smartcontractkit/cre-sdk-go/capabilities/blockchain/evm v0.10.0
 	github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http v0.10.0
-	github.com/smartcontractkit/crec-api-go v0.4.10
-	github.com/smartcontractkit/crec-sdk v0.4.10
+	github.com/smartcontractkit/crec-api-go v0.5.2
+	github.com/smartcontractkit/crec-sdk v0.6.1
 	github.com/smartcontractkit/crec-workflow-utils v0.0.15
 	github.com/stretchr/testify v1.11.1
 )
@@ -41,10 +41,10 @@ require (
 	github.com/tklauser/go-sysconf v0.3.15 // indirect
 	github.com/tklauser/numcpus v0.10.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	golang.org/x/crypto v0.45.0 // indirect
-	golang.org/x/sync v0.18.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
-	google.golang.org/protobuf v1.36.8 // indirect
+	golang.org/x/crypto v0.47.0 // indirect
+	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
