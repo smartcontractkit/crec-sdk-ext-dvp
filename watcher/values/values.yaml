@@ -16,6 +16,8 @@ chainSelector: 16015286601757825753
 contractName: ""
 contractAddress: "0x0000000000000000000000000000000000000000"
 
+confidenceLevel: "latest"
+
 # Events to watch
 eventNames: []
 

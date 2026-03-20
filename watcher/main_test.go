@@ -32,10 +32,11 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 	rt := testutils.NewRuntime(t, testutils.Secrets{})
 
 	cfg := &wfcommon.Config{
-		ChainID:       "1337",
-		ChainSelector: "123456",
-		CourierURL:    "http://example.com",
-		Service:       ptr("dvp"),
+		ChainID:         "1337",
+		ChainSelector:   "123456",
+		CourierURL:      "http://example.com",
+		Service:         ptr("dvp"),
+		ConfidenceLevel: "finalized",
 		DetectEventTriggerConfig: wfcommon.DetectEventTriggerConfig{
 			ContractName:       "CCIPDVPCoordinatorU",
 			ContractEventNames: []string{"SettlementAccepted"},
