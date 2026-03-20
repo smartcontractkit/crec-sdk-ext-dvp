@@ -16,9 +16,7 @@ chainSelector: 16015286601757825753
 contractName: ""
 contractAddress: "0x0000000000000000000000000000000000000000"
 
-# EVM log trigger confidence level: "finalized", "safe", or "latest".
-# Set explicitly because the library default changed from finalized to latest in v0.0.16.
-confidenceLevel: "finalized"
+confidenceLevel: "latest"
 
 # Events to watch
 eventNames: []
