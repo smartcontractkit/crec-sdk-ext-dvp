@@ -16,37 +16,37 @@ var (
 	_ *transactTypes.Operation
 )
 
-// PrepareAcceptSettlementOperation prepares a acceptSettlement operation on CCIPDVPCoordinatorU.
+// PrepareAcceptSettlementOperation prepares a acceptSettlement operation on CCIPDVPCoordinator.
 func (e *Extension) PrepareAcceptSettlementOperation(settlementHash [32]byte) (*transactTypes.Operation, error) {
-	return e.prepareCCIPDVPCoordinatorUOp("acceptSettlement", settlementHash)
+	return e.prepareCCIPDVPCoordinatorOp("acceptSettlement", settlementHash)
 }
 
-// PrepareCancelOperation prepares a cancel operation on CCIPDVPCoordinatorU.
+// PrepareCancelOperation prepares a cancel operation on CCIPDVPCoordinator.
 func (e *Extension) PrepareCancelOperation(settlementHash [32]byte) (*transactTypes.Operation, error) {
-	return e.prepareCCIPDVPCoordinatorUOp("cancel", settlementHash)
+	return e.prepareCCIPDVPCoordinatorOp("cancel", settlementHash)
 }
 
-// PrepareExecuteSettlementOperation prepares a executeSettlement operation on CCIPDVPCoordinatorU.
+// PrepareExecuteSettlementOperation prepares a executeSettlement operation on CCIPDVPCoordinator.
 func (e *Extension) PrepareExecuteSettlementOperation(settlementHash [32]byte) (*transactTypes.Operation, error) {
-	return e.prepareCCIPDVPCoordinatorUOp("executeSettlement", settlementHash)
+	return e.prepareCCIPDVPCoordinatorOp("executeSettlement", settlementHash)
 }
 
-// PrepareExecuteSettlementWithTokenDataOperation prepares a executeSettlementWithTokenData operation on CCIPDVPCoordinatorU.
+// PrepareExecuteSettlementWithTokenDataOperation prepares a executeSettlementWithTokenData operation on CCIPDVPCoordinator.
 func (e *Extension) PrepareExecuteSettlementWithTokenDataOperation(settlementHash [32]byte, tokenData []byte) (*transactTypes.Operation, error) {
-	return e.prepareCCIPDVPCoordinatorUOp("executeSettlementWithTokenData", settlementHash, tokenData)
+	return e.prepareCCIPDVPCoordinatorOp("executeSettlementWithTokenData", settlementHash, tokenData)
 }
 
-// PrepareRenounceOwnershipOperation prepares a renounceOwnership operation on CCIPDVPCoordinatorU.
+// PrepareRenounceOwnershipOperation prepares a renounceOwnership operation on CCIPDVPCoordinator.
 func (e *Extension) PrepareRenounceOwnershipOperation() (*transactTypes.Operation, error) {
-	return e.prepareCCIPDVPCoordinatorUOp("renounceOwnership")
+	return e.prepareCCIPDVPCoordinatorOp("renounceOwnership")
 }
 
-// PrepareSetDVPCoordinatorOperation prepares a setDVPCoordinator operation on CCIPDVPCoordinatorU.
+// PrepareSetDVPCoordinatorOperation prepares a setDVPCoordinator operation on CCIPDVPCoordinator.
 func (e *Extension) PrepareSetDVPCoordinatorOperation(chainSelector uint64, coordinator common.Address) (*transactTypes.Operation, error) {
-	return e.prepareCCIPDVPCoordinatorUOp("setDVPCoordinator", chainSelector, coordinator)
+	return e.prepareCCIPDVPCoordinatorOp("setDVPCoordinator", chainSelector, coordinator)
 }
 
-// PrepareTransferOwnershipOperation prepares a transferOwnership operation on CCIPDVPCoordinatorU.
+// PrepareTransferOwnershipOperation prepares a transferOwnership operation on CCIPDVPCoordinator.
 func (e *Extension) PrepareTransferOwnershipOperation(newOwner common.Address) (*transactTypes.Operation, error) {
-	return e.prepareCCIPDVPCoordinatorUOp("transferOwnership", newOwner)
+	return e.prepareCCIPDVPCoordinatorOp("transferOwnership", newOwner)
 }

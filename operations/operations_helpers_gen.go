@@ -22,14 +22,14 @@ var (
 	_ *transactTypes.Operation
 )
 
-// PrepareCCIPDVPCoordinatorUOperation prepares a generic operation on CCIPDVPCoordinatorU.
+// PrepareCCIPDVPCoordinatorOperation prepares a generic operation on CCIPDVPCoordinator.
 // Use this for methods not covered by the type-safe Prepare* functions.
-func (e *Extension) PrepareCCIPDVPCoordinatorUOperation(method string, args ...interface{}) (*transactTypes.Operation, error) {
-	return e.prepareOperation(CCIPDVPCoordinatorUABI(), e.ccipdvpCoordinatorUAddress, method, args...)
+func (e *Extension) PrepareCCIPDVPCoordinatorOperation(method string, args ...interface{}) (*transactTypes.Operation, error) {
+	return e.prepareOperation(CCIPDVPCoordinatorABI(), e.ccipdvpCoordinatorAddress, method, args...)
 }
 
-func (e *Extension) prepareCCIPDVPCoordinatorUOp(method string, args ...interface{}) (*transactTypes.Operation, error) {
-	return e.prepareOperation(CCIPDVPCoordinatorUABI(), e.ccipdvpCoordinatorUAddress, method, args...)
+func (e *Extension) prepareCCIPDVPCoordinatorOp(method string, args ...interface{}) (*transactTypes.Operation, error) {
+	return e.prepareOperation(CCIPDVPCoordinatorABI(), e.ccipdvpCoordinatorAddress, method, args...)
 }
 
 func (e *Extension) prepareOperation(

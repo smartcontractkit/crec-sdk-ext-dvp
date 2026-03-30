@@ -46,15 +46,15 @@ const DVPGetSettlementABI = `[
       {"name":"SecretHash","type":"bytes32"},
       {"name":"SettlementId","type":"uint256"},
       {"name":"TokenInfo","type":"tuple","components":[
+        {"name":"AssetLockType","type":"uint8"},
         {"name":"AssetTokenAmount","type":"uint256"},
         {"name":"AssetTokenDestinationAddress","type":"bytes"},
         {"name":"AssetTokenSourceAddress","type":"bytes"},
-        {"name":"AssetTokenType","type":"uint8"},
         {"name":"PaymentCurrency","type":"uint8"},
+        {"name":"PaymentLockType","type":"uint8"},
         {"name":"PaymentTokenAmount","type":"uint256"},
         {"name":"PaymentTokenDestinationAddress","type":"bytes"},
-        {"name":"PaymentTokenSourceAddress","type":"bytes"},
-        {"name":"PaymentTokenType","type":"uint8"}
+        {"name":"PaymentTokenSourceAddress","type":"bytes"}
       ]}
     ]}]
   }
@@ -203,7 +203,7 @@ func fixDVPTypes(m map[string]any) map[string]any {
 		}
 	}
 	if ti, ok := m["token_info"].(map[string]any); ok {
-		for _, k := range []string{"payment_currency", "payment_token_type", "asset_token_type", "asset_token_amount", "payment_token_amount"} {
+		for _, k := range []string{"payment_currency", "payment_lock_type", "asset_lock_type", "asset_token_amount", "payment_token_amount"} {
 			if v, ok2 := ti[k]; ok2 {
 				ti[k] = toInt(v)
 			}

@@ -38,12 +38,12 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 		Service:         ptr("dvp"),
 		ConfidenceLevel: "finalized",
 		DetectEventTriggerConfig: wfcommon.DetectEventTriggerConfig{
-			ContractName:       "CCIPDVPCoordinatorU",
+			ContractName:       "CCIPDVPCoordinator",
 			ContractEventNames: []string{"SettlementAccepted"},
 			ContractAddress:    "0xDVP",
 			ContractReaderConfig: wfcommon.ContractReaderConfig{
 				Contracts: map[string]wfcommon.ContractDef{
-					"CCIPDVPCoordinatorU": {
+					"CCIPDVPCoordinator": {
 						ContractABI: `[{"type":"event","name":"SettlementAccepted","inputs":[{"name":"settlementId","type":"uint256","indexed":true,"internalType":"uint256"},{"name":"settlementHash","type":"bytes32","indexed":true,"internalType":"bytes32"}],"anonymous":false}]`,
 					},
 				},
@@ -90,17 +90,17 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 			} `abi:"PartyInfo"`
 			SecretHash   [32]byte `abi:"SecretHash"`
 			SettlementId *big.Int `abi:"SettlementId"`
-			TokenInfo    struct {
-				AssetTokenAmount               *big.Int `abi:"AssetTokenAmount"`
-				AssetTokenDestinationAddress   []byte   `abi:"AssetTokenDestinationAddress"`
-				AssetTokenSourceAddress        []byte   `abi:"AssetTokenSourceAddress"`
-				AssetTokenType                 uint8    `abi:"AssetTokenType"`
-				PaymentCurrency                uint8    `abi:"PaymentCurrency"`
-				PaymentTokenAmount             *big.Int `abi:"PaymentTokenAmount"`
-				PaymentTokenDestinationAddress []byte   `abi:"PaymentTokenDestinationAddress"`
-				PaymentTokenSourceAddress      []byte   `abi:"PaymentTokenSourceAddress"`
-				PaymentTokenType               uint8    `abi:"PaymentTokenType"`
-			} `abi:"TokenInfo"`
+		TokenInfo    struct {
+			AssetLockType                  uint8    `abi:"AssetLockType"`
+			AssetTokenAmount               *big.Int `abi:"AssetTokenAmount"`
+			AssetTokenDestinationAddress   []byte   `abi:"AssetTokenDestinationAddress"`
+			AssetTokenSourceAddress        []byte   `abi:"AssetTokenSourceAddress"`
+			PaymentCurrency                uint8    `abi:"PaymentCurrency"`
+			PaymentLockType                uint8    `abi:"PaymentLockType"`
+			PaymentTokenAmount             *big.Int `abi:"PaymentTokenAmount"`
+			PaymentTokenDestinationAddress []byte   `abi:"PaymentTokenDestinationAddress"`
+			PaymentTokenSourceAddress      []byte   `abi:"PaymentTokenSourceAddress"`
+		} `abi:"TokenInfo"`
 		}
 
 		secretHashBytes := common.HexToHash("0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef").Bytes()
@@ -138,27 +138,27 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 			},
 			SecretHash:   secretHash,
 			SettlementId: big.NewInt(123),
-			TokenInfo: struct {
-				AssetTokenAmount               *big.Int `abi:"AssetTokenAmount"`
-				AssetTokenDestinationAddress   []byte   `abi:"AssetTokenDestinationAddress"`
-				AssetTokenSourceAddress        []byte   `abi:"AssetTokenSourceAddress"`
-				AssetTokenType                 uint8    `abi:"AssetTokenType"`
-				PaymentCurrency                uint8    `abi:"PaymentCurrency"`
-				PaymentTokenAmount             *big.Int `abi:"PaymentTokenAmount"`
-				PaymentTokenDestinationAddress []byte   `abi:"PaymentTokenDestinationAddress"`
-				PaymentTokenSourceAddress      []byte   `abi:"PaymentTokenSourceAddress"`
-				PaymentTokenType               uint8    `abi:"PaymentTokenType"`
-			}{
-				AssetTokenAmount:               big.NewInt(100),
-				AssetTokenDestinationAddress:   common.HexToAddress("0x2222222222222222222222222222222222222222").Bytes(),
-				AssetTokenSourceAddress:        common.HexToAddress("0x1111111111111111111111111111111111111111").Bytes(),
-				AssetTokenType:                 1,
-				PaymentCurrency:                0,
-				PaymentTokenAmount:             big.NewInt(200),
-				PaymentTokenDestinationAddress: common.HexToAddress("0x4444444444444444444444444444444444444444").Bytes(),
-				PaymentTokenSourceAddress:      common.HexToAddress("0x3333333333333333333333333333333333333333").Bytes(),
-				PaymentTokenType:               2,
-			},
+		TokenInfo: struct {
+			AssetLockType                  uint8    `abi:"AssetLockType"`
+			AssetTokenAmount               *big.Int `abi:"AssetTokenAmount"`
+			AssetTokenDestinationAddress   []byte   `abi:"AssetTokenDestinationAddress"`
+			AssetTokenSourceAddress        []byte   `abi:"AssetTokenSourceAddress"`
+			PaymentCurrency                uint8    `abi:"PaymentCurrency"`
+			PaymentLockType                uint8    `abi:"PaymentLockType"`
+			PaymentTokenAmount             *big.Int `abi:"PaymentTokenAmount"`
+			PaymentTokenDestinationAddress []byte   `abi:"PaymentTokenDestinationAddress"`
+			PaymentTokenSourceAddress      []byte   `abi:"PaymentTokenSourceAddress"`
+		}{
+			AssetLockType:                  1,
+			AssetTokenAmount:               big.NewInt(100),
+			AssetTokenDestinationAddress:   common.HexToAddress("0x2222222222222222222222222222222222222222").Bytes(),
+			AssetTokenSourceAddress:        common.HexToAddress("0x1111111111111111111111111111111111111111").Bytes(),
+			PaymentCurrency:                0,
+			PaymentLockType:                2,
+			PaymentTokenAmount:             big.NewInt(200),
+			PaymentTokenDestinationAddress: common.HexToAddress("0x4444444444444444444444444444444444444444").Bytes(),
+			PaymentTokenSourceAddress:      common.HexToAddress("0x3333333333333333333333333333333333333333").Bytes(),
+		},
 		}
 
 		packed, err := getSettMethod.Outputs.Pack(settlement)
@@ -281,13 +281,13 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 		if err != nil || paymentTokenAmount != 200 {
 			return nil, fmt.Errorf("expected payment_token_amount 200, got %v (%v)", tokenInfo["payment_token_amount"], err)
 		}
-		assetTokenType, err := toInt64(tokenInfo["asset_token_type"])
-		if err != nil || assetTokenType != 1 {
-			return nil, fmt.Errorf("expected asset_token_type 1, got %v (%v)", tokenInfo["asset_token_type"], err)
+		assetLockType, err := toInt64(tokenInfo["asset_lock_type"])
+		if err != nil || assetLockType != 1 {
+			return nil, fmt.Errorf("expected asset_lock_type 1, got %v (%v)", tokenInfo["asset_lock_type"], err)
 		}
-		paymentTokenType, err := toInt64(tokenInfo["payment_token_type"])
-		if err != nil || paymentTokenType != 2 {
-			return nil, fmt.Errorf("expected payment_token_type 2, got %v (%v)", tokenInfo["payment_token_type"], err)
+		paymentLockType, err := toInt64(tokenInfo["payment_lock_type"])
+		if err != nil || paymentLockType != 2 {
+			return nil, fmt.Errorf("expected payment_lock_type 2, got %v (%v)", tokenInfo["payment_lock_type"], err)
 		}
 		paymentCurrency, err := toInt64(tokenInfo["payment_currency"])
 		if err != nil || paymentCurrency != 0 {

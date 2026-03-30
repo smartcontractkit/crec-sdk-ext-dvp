@@ -32,15 +32,15 @@ contract MockDVPCoordinator {
     }
 
     struct TokenInfo {
+        uint8 AssetLockType;
         uint256 AssetTokenAmount;
         bytes AssetTokenDestinationAddress;
         bytes AssetTokenSourceAddress;
-        uint8 AssetTokenType;
         uint8 PaymentCurrency;
+        uint8 PaymentLockType;
         uint256 PaymentTokenAmount;
         bytes PaymentTokenDestinationAddress;
         bytes PaymentTokenSourceAddress;
-        uint8 PaymentTokenType;
     }
 
     struct Settlement {
@@ -88,15 +88,15 @@ contract MockDVPCoordinator {
             SecretHash: bytes32(0),
             SettlementId: 1,
             TokenInfo: TokenInfo({
+                AssetLockType: 1,
                 AssetTokenAmount: 1000,
                 AssetTokenDestinationAddress: abi.encodePacked(msg.sender),
                 AssetTokenSourceAddress: abi.encodePacked(address(0xdead)),
-                AssetTokenType: 1,
                 PaymentCurrency: 1,
+                PaymentLockType: 1,
                 PaymentTokenAmount: 500,
                 PaymentTokenDestinationAddress: abi.encodePacked(address(0xdead)),
-                PaymentTokenSourceAddress: abi.encodePacked(msg.sender),
-                PaymentTokenType: 1
+                PaymentTokenSourceAddress: abi.encodePacked(msg.sender)
             })
         });
     }

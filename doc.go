@@ -2,7 +2,7 @@
 //
 // This package is organized into sub-packages:
 //
-//   - dvp/events:     Event types, Settlement struct, constants (TokenType), and decoders.
+//   - dvp/events:     Event types, Settlement struct, constants (LockType), and decoders.
 //   - dvp/currency:   ISO 4217 currency code mapping for DvP settlements.
 //   - dvp/operations: Extension client for preparing on-chain operations.
 //
@@ -23,7 +23,7 @@
 //	import "github.com/smartcontractkit/crec-sdk-ext-dvp/events"
 //
 //	ext, err := operations.New(&operations.Options{
-//		CCIPDVPCoordinatorUAddress: "0x...",
+//		CCIPDVPCoordinatorAddress: "0x...",
 //		AccountAddress:             "0x...",
 //	})
 //	op, err := ext.PrepareProposeSettlementOperation(settlement)

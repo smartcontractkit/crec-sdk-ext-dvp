@@ -10,19 +10,19 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
-//go:embed CCIPDVPCoordinatorU.abi.json
-var ccipdvpCoordinatorUABIJSON string
+//go:embed CCIPDVPCoordinator.abi.json
+var ccipdvpCoordinatorABIJSON string
 
 var (
-	ccipdvpCoordinatorUABI *abi.ABI
+	ccipdvpCoordinatorABI *abi.ABI
 )
 
 func init() {
 	var err error
 
-	ccipdvpCoordinatorUABI, err = parseABI(ccipdvpCoordinatorUABIJSON)
+	ccipdvpCoordinatorABI, err = parseABI(ccipdvpCoordinatorABIJSON)
 	if err != nil {
-		panic(fmt.Sprintf("failed to parse CCIPDVPCoordinatorU ABI: %v", err))
+		panic(fmt.Sprintf("failed to parse CCIPDVPCoordinator ABI: %v", err))
 	}
 
 }
@@ -35,7 +35,7 @@ func parseABI(jsonABI string) (*abi.ABI, error) {
 	return &parsed, nil
 }
 
-// CCIPDVPCoordinatorUABI returns the parsed CCIPDVPCoordinatorU ABI.
-func CCIPDVPCoordinatorUABI() *abi.ABI {
-	return ccipdvpCoordinatorUABI
+// CCIPDVPCoordinatorABI returns the parsed CCIPDVPCoordinator ABI.
+func CCIPDVPCoordinatorABI() *abi.ABI {
+	return ccipdvpCoordinatorABI
 }

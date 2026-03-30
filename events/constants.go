@@ -1,10 +1,10 @@
 package events
 
-// Token type constants for DvP settlements.
+// Lock type constants for DvP settlements.
 const (
-	TokenTypeNone = iota
-	TokenTypeERC20
-	TokenTypeERC3643
+	LockTypeNone = iota
+	LockTypeERC20
+	LockTypeERC3643
 )
 
 // Settlement status constants.

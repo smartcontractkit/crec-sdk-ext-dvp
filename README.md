@@ -30,7 +30,7 @@ import (
 )
 
 ext, err := operations.New(&operations.Options{
-    CCIPDVPCoordinatorUAddress: "0x...",
+    CCIPDVPCoordinatorAddress: "0x...",
     AccountAddress:             "0x...",
 })
 if err != nil {
@@ -63,11 +63,11 @@ settlement := &events.Settlement{
         PaymentTokenDestinationAddress: common.HexToAddress("0xPaymentToken..."),
         AssetTokenSourceAddress:        common.HexToAddress("0xAssetToken..."),
         AssetTokenDestinationAddress:   common.HexToAddress("0xAssetToken..."),
-        PaymentCurrency:                currency.Map["USD"],
         PaymentTokenAmount:             big.NewInt(1000000),
         AssetTokenAmount:               big.NewInt(1000000000000000000),
-        PaymentTokenType:               events.TokenTypeERC20,
-        AssetTokenType:                 events.TokenTypeERC20,
+        PaymentCurrency:                currency.Map["USD"],
+        PaymentLockType:                events.LockTypeERC20,
+        AssetLockType:                  events.LockTypeERC20,
     },
     DeliveryInfo: events.DeliveryInfo{
         PaymentSourceChainSelector:      uint64(1),
@@ -113,13 +113,13 @@ hash, err := ext.HashSettlement(settlement)
 fmt.Printf("Settlement hash: %s\n", hash.Hex())
 ```
 
-## Token Types
+## Lock Types
 
-| Constant | Value | Description |
-|----------|-------|-------------|
-| `TokenTypeNone` | 0 | No token type specified |
-| `TokenTypeERC20` | 1 | Standard ERC20 token |
-| `TokenTypeERC3643` | 2 | Security token (T-REX) |
+| Constant          | Value | Description                |
+|-------------------|-------|----------------------------|
+| `LockTypeNone`    | 0     | No lock type specified     |
+| `LockTypeERC20`   | 1     | Standard ERC20 token       |
+| `LockTypeERC3643` | 2     | Security token (T-REX)     |
 
 ## Settlement Status
 

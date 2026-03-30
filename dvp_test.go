@@ -26,7 +26,7 @@ func TestOperations_New(t *testing.T) {
 		{
 			name: "valid options creates extension",
 			opts: &operations.Options{
-				CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+				CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 				AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 			},
 			wantErr: false,
@@ -49,7 +49,7 @@ func TestOperations_New(t *testing.T) {
 
 func TestOperations_HashSettlement(t *testing.T) {
 	ext, err := operations.New(&operations.Options{
-		CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+		CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 		AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 	})
 	require.NoError(t, err)
@@ -68,11 +68,11 @@ func TestOperations_HashSettlement(t *testing.T) {
 			PaymentTokenDestinationAddress: common.HexToAddress("0x0000000000000000000000000000000000000000"),
 			AssetTokenSourceAddress:        common.HexToAddress("0xA5F12FDA3e8B7209a3019141F105e5DB43445B86"),
 			AssetTokenDestinationAddress:   common.HexToAddress("0xA5F12FDA3e8B7209a3019141F105e5DB43445B86"),
-			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(1000000),
 			AssetTokenAmount:               big.NewInt(1000000000000000000),
-			PaymentTokenType:               events.TokenTypeNone,
-			AssetTokenType:                 events.TokenTypeERC20,
+			PaymentCurrency:                currency.Map["USD"],
+			PaymentLockType:                events.LockTypeNone,
+			AssetLockType:                  events.LockTypeERC20,
 		},
 		DeliveryInfo: events.DeliveryInfo{
 			PaymentSourceChainSelector:      uint64(1234567890),
@@ -94,7 +94,7 @@ func TestOperations_HashSettlement(t *testing.T) {
 
 func TestOperations_PrepareProposeSettlementOperation(t *testing.T) {
 	ext, err := operations.New(&operations.Options{
-		CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+		CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 		AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 	})
 	require.NoError(t, err)
@@ -116,8 +116,8 @@ func TestOperations_PrepareProposeSettlementOperation(t *testing.T) {
 			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(100),
 			AssetTokenAmount:               big.NewInt(1000),
-			PaymentTokenType:               events.TokenTypeNone,
-			AssetTokenType:                 events.TokenTypeERC20,
+			PaymentLockType:               events.LockTypeNone,
+			AssetLockType:                 events.LockTypeERC20,
 		},
 		DeliveryInfo: events.DeliveryInfo{
 			PaymentSourceChainSelector:      uint64(1),
@@ -141,7 +141,7 @@ func TestOperations_PrepareProposeSettlementOperation(t *testing.T) {
 
 func TestOperations_PrepareProposeSettlementWithTokenApprovalOperation(t *testing.T) {
 	ext, err := operations.New(&operations.Options{
-		CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+		CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 		AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 	})
 	require.NoError(t, err)
@@ -163,8 +163,8 @@ func TestOperations_PrepareProposeSettlementWithTokenApprovalOperation(t *testin
 			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(100),
 			AssetTokenAmount:               big.NewInt(1000),
-			PaymentTokenType:               events.TokenTypeNone,
-			AssetTokenType:                 events.TokenTypeERC20,
+			PaymentLockType:               events.LockTypeNone,
+			AssetLockType:                 events.LockTypeERC20,
 		},
 		DeliveryInfo: events.DeliveryInfo{
 			PaymentSourceChainSelector:      uint64(1),
@@ -190,7 +190,7 @@ func TestOperations_PrepareProposeSettlementWithTokenApprovalOperation(t *testin
 func TestOperations_PrepareProposeSettlementWithTokenHoldOperation(t *testing.T) {
 	holdManagerAddr := common.HexToAddress("0x4444444444444444444444444444444444444444")
 	ext, err := operations.New(&operations.Options{
-		CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+		CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 		AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 	})
 	require.NoError(t, err)
@@ -212,8 +212,8 @@ func TestOperations_PrepareProposeSettlementWithTokenHoldOperation(t *testing.T)
 			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(100),
 			AssetTokenAmount:               big.NewInt(1000),
-			PaymentTokenType:               events.TokenTypeNone,
-			AssetTokenType:                 events.TokenTypeERC3643,
+			PaymentLockType:               events.LockTypeNone,
+			AssetLockType:                 events.LockTypeERC3643,
 		},
 		DeliveryInfo: events.DeliveryInfo{
 			PaymentSourceChainSelector:      uint64(1),
@@ -239,7 +239,7 @@ func TestOperations_PrepareProposeSettlementWithTokenHoldOperation(t *testing.T)
 func TestOperations_PrepareProposeSettlementWithTokenHoldOperation_NonERC3643Fails(t *testing.T) {
 	holdManagerAddr := common.HexToAddress("0x4444444444444444444444444444444444444444")
 	ext, err := operations.New(&operations.Options{
-		CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+		CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 		AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 	})
 	require.NoError(t, err)
@@ -261,8 +261,8 @@ func TestOperations_PrepareProposeSettlementWithTokenHoldOperation_NonERC3643Fai
 			PaymentCurrency:                currency.Map["USD"],
 			PaymentTokenAmount:             big.NewInt(100),
 			AssetTokenAmount:               big.NewInt(1000),
-			PaymentTokenType:               events.TokenTypeNone,
-			AssetTokenType:                 events.TokenTypeERC20,
+			PaymentLockType:               events.LockTypeNone,
+			AssetLockType:                 events.LockTypeERC20,
 		},
 		DeliveryInfo: events.DeliveryInfo{
 			PaymentSourceChainSelector:      uint64(1),
@@ -285,7 +285,7 @@ func TestOperations_PrepareProposeSettlementWithTokenHoldOperation_NonERC3643Fai
 
 func TestOperations_PrepareCancelOperation(t *testing.T) {
 	ext, err := operations.New(&operations.Options{
-		CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+		CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 		AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 	})
 	require.NoError(t, err)
@@ -301,7 +301,7 @@ func TestOperations_PrepareCancelOperation(t *testing.T) {
 
 func TestOperations_PrepareExecuteSettlementWithTokenDataOperation(t *testing.T) {
 	ext, err := operations.New(&operations.Options{
-		CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+		CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 		AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 	})
 	require.NoError(t, err)
@@ -318,7 +318,7 @@ func TestOperations_PrepareExecuteSettlementWithTokenDataOperation(t *testing.T)
 
 func TestOperations_PrepareAcceptSettlementOperation(t *testing.T) {
 	ext, err := operations.New(&operations.Options{
-		CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+		CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 		AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 	})
 	require.NoError(t, err)
@@ -334,7 +334,7 @@ func TestOperations_PrepareAcceptSettlementOperation(t *testing.T) {
 
 func TestOperations_PrepareExecuteSettlementOperation(t *testing.T) {
 	ext, err := operations.New(&operations.Options{
-		CCIPDVPCoordinatorUAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+		CCIPDVPCoordinatorAddress: "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
 		AccountAddress:             "0x7Eb6D2Bf84C394A1718a60f0f89FBc4626eCdbA1",
 	})
 	require.NoError(t, err)
