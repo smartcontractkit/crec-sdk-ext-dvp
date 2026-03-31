@@ -57,7 +57,7 @@ func (e *Extension) PrepareProposeSettlementWithTokenApprovalOperation(settlemen
 func (e *Extension) PrepareProposeSettlementWithTokenHoldOperation(
 	settlement *events.Settlement, holdManagerAddress common.Address,
 ) (*transactTypes.Operation, error) {
-	if settlement.TokenInfo.AssetTokenType != events.TokenTypeERC3643 {
+	if settlement.TokenInfo.AssetLockType != events.LockTypeERC3643 {
 		return nil, fmt.Errorf("token hold is only supported for ERC3643 asset tokens")
 	}
 
@@ -118,8 +118,8 @@ func HashSettlement(settlement *events.Settlement) (common.Hash, error) {
 		settlement.TokenInfo.PaymentTokenDestinationAddress,
 		settlement.TokenInfo.AssetTokenSourceAddress,
 		settlement.TokenInfo.AssetTokenDestinationAddress,
-		settlement.TokenInfo.PaymentTokenType,
-		settlement.TokenInfo.AssetTokenType,
+		settlement.TokenInfo.PaymentLockType,
+		settlement.TokenInfo.AssetLockType,
 	)
 	if err != nil {
 		return common.Hash{}, fmt.Errorf("failed to pack token info data: %w", err)
@@ -169,13 +169,13 @@ func (e *Extension) prepareSettlementOperation(
 	extraTransactions []transactTypes.Transaction,
 	packArgs ...interface{},
 ) (*transactTypes.Operation, error) {
-	calldata, err := CCIPDVPCoordinatorUABI().Pack(operationName, packArgs...)
+	calldata, err := CCIPDVPCoordinatorABI().Pack(operationName, packArgs...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack calldata for %s: %w", operationName, err)
 	}
 
 	mainTransaction := transactTypes.Transaction{
-		To:    e.ccipdvpCoordinatorUAddress,
+		To:    e.ccipdvpCoordinatorAddress,
 		Value: big.NewInt(0),
 		Data:  calldata,
 	}
@@ -197,7 +197,7 @@ func (e *Extension) prepareTokenApproveTransaction(
 		return nil, fmt.Errorf("failed to get ERC20 ABI: %w", err)
 	}
 
-	calldata, err := erc20Abi.Pack("approve", e.ccipdvpCoordinatorUAddress, tokenAmount)
+	calldata, err := erc20Abi.Pack("approve", e.ccipdvpCoordinatorAddress, tokenAmount)
 	if err != nil {
 		return nil, fmt.Errorf("failed to pack calldata for token approve: %w", err)
 	}
@@ -221,8 +221,8 @@ func (e *Extension) prepareTokenHoldTransaction(
 	hold := holdmanager.IHoldManagerHold{
 		Token:     tokenAddress,
 		Sender:    sender,
-		Recipient: e.ccipdvpCoordinatorUAddress,
-		Executor:  e.ccipdvpCoordinatorUAddress,
+		Recipient: e.ccipdvpCoordinatorAddress,
+		Executor:  e.ccipdvpCoordinatorAddress,
 		ExpiresAt: expiresAt,
 		Value:     tokenAmount,
 	}

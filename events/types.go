@@ -33,16 +33,16 @@ type TokenInfo struct {
 	AssetTokenSourceAddress common.Address
 	// AssetTokenDestinationAddress is the asset token contract on the destination chain.
 	AssetTokenDestinationAddress common.Address
-	// PaymentCurrency is the ISO 4217 currency code (see currency.Map).
-	PaymentCurrency uint8
 	// PaymentTokenAmount is the amount of payment token to transfer.
 	PaymentTokenAmount *big.Int
 	// AssetTokenAmount is the amount of asset token to transfer.
 	AssetTokenAmount *big.Int
-	// PaymentTokenType indicates ERC20 or ERC3643 (see TokenType constants).
-	PaymentTokenType uint8
-	// AssetTokenType indicates ERC20 or ERC3643 (see TokenType constants).
-	AssetTokenType uint8
+	// PaymentCurrency is the ISO 4217 currency code (see currency.Map).
+	PaymentCurrency uint8
+	// PaymentLockType indicates the lock mechanism for payment tokens (see LockType constants).
+	PaymentLockType uint8
+	// AssetLockType indicates the lock mechanism for asset tokens (see LockType constants).
+	AssetLockType uint8
 }
 
 // DeliveryInfo represents chain selectors for cross-chain delivery.

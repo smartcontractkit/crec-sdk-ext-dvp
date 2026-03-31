@@ -10,8 +10,8 @@ import (
 //go:embed binary.wasm.br.b64
 var wasmBinaryBrB64 string
 
-//go:embed CCIPDVPCoordinatorU.abi.json
-var ccipdvpCoordinatorUABI string
+//go:embed CCIPDVPCoordinator.abi.json
+var ccipdvpCoordinatorABI string
 
 // Get returns the dvp watcher bundle.
 func Get() *crecbundle.Bundle {
@@ -24,7 +24,7 @@ func Get() *crecbundle.Bundle {
 }
 
 var contracts = []crecbundle.Contract{
-	{Name: "CCIPDVPCoordinatorU", ABI: ccipdvpCoordinatorUABI},
+	{Name: "CCIPDVPCoordinator", ABI: ccipdvpCoordinatorABI},
 }
 
 // DataSchema for events enriched with on-chain settlement details from getSettlement(bytes32).
@@ -68,12 +68,12 @@ var settlementDataSchema = json.RawMessage(`{
 						"asset_token_amount": {"type": "integer"},
 						"asset_token_destination_address": {"type": "string"},
 						"asset_token_source_address": {"type": "string"},
-						"asset_token_type": {"type": "integer"},
-						"payment_currency": {"type": "integer"},
-						"payment_token_amount": {"type": "integer"},
-						"payment_token_destination_address": {"type": "string"},
-						"payment_token_source_address": {"type": "string"},
-						"payment_token_type": {"type": "integer"}
+					"asset_lock_type": {"type": "integer"},
+					"payment_currency": {"type": "integer"},
+					"payment_token_amount": {"type": "integer"},
+					"payment_token_destination_address": {"type": "string"},
+					"payment_token_source_address": {"type": "string"},
+					"payment_lock_type": {"type": "integer"}
 					}
 				}
 			}
@@ -82,10 +82,10 @@ var settlementDataSchema = json.RawMessage(`{
 }`)
 
 var events = []crecbundle.Event{
-	{Name: "SettlementOpened", TriggerContract: "CCIPDVPCoordinatorU", Description: "New settlement proposed", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementOpened"]), DataSchema: settlementDataSchema},
-	{Name: "SettlementAccepted", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement accepted by counterparty", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementAccepted"]), DataSchema: settlementDataSchema},
-	{Name: "SettlementClosing", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement in closing process", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementClosing"]), DataSchema: settlementDataSchema},
-	{Name: "SettlementSettled", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement completed", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementSettled"]), DataSchema: settlementDataSchema},
-	{Name: "SettlementCanceling", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement being canceled", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementCanceling"]), DataSchema: settlementDataSchema},
-	{Name: "SettlementCanceled", TriggerContract: "CCIPDVPCoordinatorU", Description: "Settlement canceled", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementCanceled"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementOpened", TriggerContract: "CCIPDVPCoordinator", Description: "New settlement proposed", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementOpened"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementAccepted", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement accepted by counterparty", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementAccepted"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementClosing", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement in closing process", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementClosing"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementSettled", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement completed", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementSettled"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementCanceling", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement being canceled", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementCanceling"]), DataSchema: settlementDataSchema},
+	{Name: "SettlementCanceled", TriggerContract: "CCIPDVPCoordinator", Description: "Settlement canceled", ParamsSchema: json.RawMessage(ParamsSchemas["SettlementCanceled"]), DataSchema: settlementDataSchema},
 }

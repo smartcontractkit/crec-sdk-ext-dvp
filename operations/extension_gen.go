@@ -14,7 +14,7 @@ type Options struct {
 	Logger         *slog.Logger
 	AccountAddress string
 
-	CCIPDVPCoordinatorUAddress string
+	CCIPDVPCoordinatorAddress string
 }
 
 func (o *Options) validate() error {
@@ -22,8 +22,8 @@ func (o *Options) validate() error {
 		return fmt.Errorf("invalid AccountAddress: %q", o.AccountAddress)
 	}
 
-	if !common.IsHexAddress(o.CCIPDVPCoordinatorUAddress) {
-		return fmt.Errorf("invalid CCIPDVPCoordinatorUAddress: %q", o.CCIPDVPCoordinatorUAddress)
+	if !common.IsHexAddress(o.CCIPDVPCoordinatorAddress) {
+		return fmt.Errorf("invalid CCIPDVPCoordinatorAddress: %q", o.CCIPDVPCoordinatorAddress)
 	}
 
 	return nil
@@ -31,9 +31,9 @@ func (o *Options) validate() error {
 
 // Extension provides methods for preparing operations.
 type Extension struct {
-	logger                     *slog.Logger
-	accountAddress             common.Address
-	ccipdvpCoordinatorUAddress common.Address
+	logger                    *slog.Logger
+	accountAddress            common.Address
+	ccipdvpCoordinatorAddress common.Address
 }
 
 // New creates a new extension with the provided options.
@@ -54,8 +54,8 @@ func New(opts *Options) (*Extension, error) {
 	logger.Info("creating CREC SDK extension")
 
 	return &Extension{
-		logger:                     logger,
-		accountAddress:             common.HexToAddress(opts.AccountAddress),
-		ccipdvpCoordinatorUAddress: common.HexToAddress(opts.CCIPDVPCoordinatorUAddress),
+		logger:                    logger,
+		accountAddress:            common.HexToAddress(opts.AccountAddress),
+		ccipdvpCoordinatorAddress: common.HexToAddress(opts.CCIPDVPCoordinatorAddress),
 	}, nil
 }

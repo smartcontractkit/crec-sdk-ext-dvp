@@ -14,45 +14,45 @@ contract MockDVPCoordinator {
     event SettlementCanceling(uint256 indexed settlementId, bytes32 indexed settlementHash);
     event SettlementCanceled(uint256 indexed settlementId, bytes32 indexed settlementHash);
 
-    // --- Settlement struct (mirrors DVPCoordinator.Settlement) ---
-
-    struct DeliveryInfo {
-        uint64 AssetDestinationChainSelector;
-        uint64 AssetSourceChainSelector;
-        uint64 PaymentDestinationChainSelector;
-        uint64 PaymentSourceChainSelector;
-    }
+    // --- Settlement struct (mirrors CCIPDVPCoordinator.Settlement) ---
 
     struct PartyInfo {
-        bytes BuyerDestinationAddress;
-        bytes BuyerSourceAddress;
-        bytes ExecutorAddress;
-        bytes SellerDestinationAddress;
-        bytes SellerSourceAddress;
+        address buyerSourceAddress;
+        address buyerDestinationAddress;
+        address sellerSourceAddress;
+        address sellerDestinationAddress;
+        address executorAddress;
     }
 
     struct TokenInfo {
-        uint256 AssetTokenAmount;
-        bytes AssetTokenDestinationAddress;
-        bytes AssetTokenSourceAddress;
-        uint8 AssetTokenType;
-        uint8 PaymentCurrency;
-        uint256 PaymentTokenAmount;
-        bytes PaymentTokenDestinationAddress;
-        bytes PaymentTokenSourceAddress;
-        uint8 PaymentTokenType;
+        address paymentTokenSourceAddress;
+        address paymentTokenDestinationAddress;
+        address assetTokenSourceAddress;
+        address assetTokenDestinationAddress;
+        uint256 paymentTokenAmount;
+        uint256 assetTokenAmount;
+        uint8 paymentCurrency;
+        uint8 paymentLockType;
+        uint8 assetLockType;
+    }
+
+    struct DeliveryInfo {
+        uint64 paymentSourceChainSelector;
+        uint64 paymentDestinationChainSelector;
+        uint64 assetSourceChainSelector;
+        uint64 assetDestinationChainSelector;
     }
 
     struct Settlement {
-        uint256 CcipCallbackGasLimit;
-        bytes Data;
-        DeliveryInfo DeliveryInfo;
-        uint256 ExecuteAfter;
-        uint256 Expiration;
-        PartyInfo PartyInfo;
-        bytes32 SecretHash;
-        uint256 SettlementId;
-        TokenInfo TokenInfo;
+        uint256 settlementId;
+        PartyInfo partyInfo;
+        TokenInfo tokenInfo;
+        DeliveryInfo deliveryInfo;
+        bytes32 secretHash;
+        uint48 executeAfter;
+        uint48 expiration;
+        uint32 ccipCallbackGasLimit;
+        bytes data;
     }
 
     uint256 private _nextId = 1;
@@ -68,36 +68,36 @@ contract MockDVPCoordinator {
     ///         The DVP watcher handler calls this to enrich events.
     function getSettlement(bytes32 /* settlementHash */) external view returns (Settlement memory) {
         return Settlement({
-            CcipCallbackGasLimit: 200000,
-            Data: hex"deadbeef",
-            DeliveryInfo: DeliveryInfo({
-                AssetDestinationChainSelector: 16015286601757825753,
-                AssetSourceChainSelector: 16015286601757825753,
-                PaymentDestinationChainSelector: 16015286601757825753,
-                PaymentSourceChainSelector: 16015286601757825753
+            settlementId: 1,
+            partyInfo: PartyInfo({
+                buyerSourceAddress: msg.sender,
+                buyerDestinationAddress: msg.sender,
+                sellerSourceAddress: address(0xdead),
+                sellerDestinationAddress: address(0xdead),
+                executorAddress: msg.sender
             }),
-            ExecuteAfter: 0,
-            Expiration: 1893456000, // 2030-01-01
-            PartyInfo: PartyInfo({
-                BuyerDestinationAddress: abi.encodePacked(msg.sender),
-                BuyerSourceAddress: abi.encodePacked(msg.sender),
-                ExecutorAddress: abi.encodePacked(msg.sender),
-                SellerDestinationAddress: abi.encodePacked(address(0xdead)),
-                SellerSourceAddress: abi.encodePacked(address(0xdead))
+            tokenInfo: TokenInfo({
+                paymentTokenSourceAddress: msg.sender,
+                paymentTokenDestinationAddress: address(0xdead),
+                assetTokenSourceAddress: address(0xdead),
+                assetTokenDestinationAddress: msg.sender,
+                paymentTokenAmount: 500,
+                assetTokenAmount: 1000,
+                paymentCurrency: 1,
+                paymentLockType: 1,
+                assetLockType: 1
             }),
-            SecretHash: bytes32(0),
-            SettlementId: 1,
-            TokenInfo: TokenInfo({
-                AssetTokenAmount: 1000,
-                AssetTokenDestinationAddress: abi.encodePacked(msg.sender),
-                AssetTokenSourceAddress: abi.encodePacked(address(0xdead)),
-                AssetTokenType: 1,
-                PaymentCurrency: 1,
-                PaymentTokenAmount: 500,
-                PaymentTokenDestinationAddress: abi.encodePacked(address(0xdead)),
-                PaymentTokenSourceAddress: abi.encodePacked(msg.sender),
-                PaymentTokenType: 1
-            })
+            deliveryInfo: DeliveryInfo({
+                paymentSourceChainSelector: 16015286601757825753,
+                paymentDestinationChainSelector: 16015286601757825753,
+                assetSourceChainSelector: 16015286601757825753,
+                assetDestinationChainSelector: 16015286601757825753
+            }),
+            secretHash: bytes32(0),
+            executeAfter: 0,
+            expiration: 1893456000, // 2030-01-01
+            ccipCallbackGasLimit: 200000,
+            data: hex"deadbeef"
         });
     }
 }

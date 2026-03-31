@@ -19,7 +19,7 @@ func TestBundle_Get(t *testing.T) {
 
 	t.Run("Contracts", func(t *testing.T) {
 		require.Len(t, b.Contracts, 1)
-		assert.Equal(t, "CCIPDVPCoordinatorU", b.Contracts[0].Name)
+		assert.Equal(t, "CCIPDVPCoordinator", b.Contracts[0].Name)
 		assert.NotEmpty(t, b.Contracts[0].ABI)
 	})
 

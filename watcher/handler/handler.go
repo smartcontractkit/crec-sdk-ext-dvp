@@ -18,7 +18,8 @@ import (
 )
 
 // Minimal ABI for getSettlement(bytes32) returning the Settlement struct.
-// This mirrors the Solidity struct layout used in DVPCoordinator.
+// Field order and types MUST match the actual Solidity struct layout in
+// CCIPDVPCoordinator — eth_call returns ABI-encoded data in struct order.
 const DVPGetSettlementABI = `[
   {
     "type":"function",
@@ -26,36 +27,36 @@ const DVPGetSettlementABI = `[
     "stateMutability":"view",
     "inputs":[{"name":"settlementHash","type":"bytes32"}],
     "outputs":[{"name":"settlement","type":"tuple","components":[
-      {"name":"CcipCallbackGasLimit","type":"uint256"},
-      {"name":"Data","type":"bytes"},
-      {"name":"DeliveryInfo","type":"tuple","components":[
-        {"name":"AssetDestinationChainSelector","type":"uint64"},
-        {"name":"AssetSourceChainSelector","type":"uint64"},
-        {"name":"PaymentDestinationChainSelector","type":"uint64"},
-        {"name":"PaymentSourceChainSelector","type":"uint64"}
+      {"name":"settlementId","type":"uint256"},
+      {"name":"partyInfo","type":"tuple","components":[
+        {"name":"buyerSourceAddress","type":"address"},
+        {"name":"buyerDestinationAddress","type":"address"},
+        {"name":"sellerSourceAddress","type":"address"},
+        {"name":"sellerDestinationAddress","type":"address"},
+        {"name":"executorAddress","type":"address"}
       ]},
-      {"name":"ExecuteAfter","type":"uint256"},
-      {"name":"Expiration","type":"uint256"},
-      {"name":"PartyInfo","type":"tuple","components":[
-        {"name":"BuyerDestinationAddress","type":"bytes"},
-        {"name":"BuyerSourceAddress","type":"bytes"},
-        {"name":"ExecutorAddress","type":"bytes"},
-        {"name":"SellerDestinationAddress","type":"bytes"},
-        {"name":"SellerSourceAddress","type":"bytes"}
+      {"name":"tokenInfo","type":"tuple","components":[
+        {"name":"paymentTokenSourceAddress","type":"address"},
+        {"name":"paymentTokenDestinationAddress","type":"address"},
+        {"name":"assetTokenSourceAddress","type":"address"},
+        {"name":"assetTokenDestinationAddress","type":"address"},
+        {"name":"paymentTokenAmount","type":"uint256"},
+        {"name":"assetTokenAmount","type":"uint256"},
+        {"name":"paymentCurrency","type":"uint8"},
+        {"name":"paymentLockType","type":"uint8"},
+        {"name":"assetLockType","type":"uint8"}
       ]},
-      {"name":"SecretHash","type":"bytes32"},
-      {"name":"SettlementId","type":"uint256"},
-      {"name":"TokenInfo","type":"tuple","components":[
-        {"name":"AssetTokenAmount","type":"uint256"},
-        {"name":"AssetTokenDestinationAddress","type":"bytes"},
-        {"name":"AssetTokenSourceAddress","type":"bytes"},
-        {"name":"AssetTokenType","type":"uint8"},
-        {"name":"PaymentCurrency","type":"uint8"},
-        {"name":"PaymentTokenAmount","type":"uint256"},
-        {"name":"PaymentTokenDestinationAddress","type":"bytes"},
-        {"name":"PaymentTokenSourceAddress","type":"bytes"},
-        {"name":"PaymentTokenType","type":"uint8"}
-      ]}
+      {"name":"deliveryInfo","type":"tuple","components":[
+        {"name":"paymentSourceChainSelector","type":"uint64"},
+        {"name":"paymentDestinationChainSelector","type":"uint64"},
+        {"name":"assetSourceChainSelector","type":"uint64"},
+        {"name":"assetDestinationChainSelector","type":"uint64"}
+      ]},
+      {"name":"secretHash","type":"bytes32"},
+      {"name":"executeAfter","type":"uint48"},
+      {"name":"expiration","type":"uint48"},
+      {"name":"ccipCallbackGasLimit","type":"uint32"},
+      {"name":"data","type":"bytes"}
     ]}]
   }
 ]`
@@ -73,8 +74,13 @@ func OnLog(cfg *wfcommon.Config, rt cre.Runtime, payload *evm.Log) (string, erro
 	settlementHashBytes := payload.Topics[2]
 	settlementHash := "0x" + fmt.Sprintf("%064x", new(big.Int).SetBytes(settlementHashBytes))
 
+	rt.Logger().Info("processing DVP log", "settlementId", settlementID.String(), "settlementHash", settlementHash)
+
 	dvpMeta := map[string]any{}
-	if settlementDecoded, err := fetchAndDecodeSettlement(rt, selector, cfg.DetectEventTriggerConfig.ContractAddress, settlementHashBytes); err == nil && settlementDecoded != nil {
+	settlementDecoded, err := fetchAndDecodeSettlement(rt, selector, cfg.DetectEventTriggerConfig.ContractAddress, settlementHashBytes)
+	if err != nil {
+		rt.Logger().Warn("failed to fetch settlement metadata, skipping enrichment", "settlementHash", settlementHash, "error", err)
+	} else if settlementDecoded != nil {
 		dvpSanitised := wfcommon.SanitiseJSON(settlementDecoded).(map[string]any)
 		dvpMeta = fixDVPTypes(dvpSanitised)
 	}
@@ -111,6 +117,8 @@ func OnLog(cfg *wfcommon.Config, rt cre.Runtime, payload *evm.Log) (string, erro
 	if err != nil {
 		return "", err
 	}
+
+	rt.Logger().Info("posting verifiable event", "eventName", eventName, "settlementId", settlementID.String(), "hasMetadata", len(dvpMeta) > 0)
 
 	return wfcommon.SignAndPostVerifiableEvent(cfg, rt, verifiableEvent)
 }
@@ -191,19 +199,25 @@ func fixDVPTypes(m map[string]any) map[string]any {
 			return t.String()
 		case float64:
 			return int64(t)
-		case int64, int32, int, uint64, uint32, uint:
+		case uint8:
+			return int64(t)
+		case uint16:
+			return int64(t)
+		case uint32:
+			return int64(t)
+		case int64, int, uint64:
 			return t
 		default:
 			return v
 		}
 	}
-	for _, k := range []string{"execute_after", "expiration", "ccip_callback_gas_limit"} {
+	for _, k := range []string{"settlement_id", "execute_after", "expiration", "ccip_callback_gas_limit"} {
 		if v, ok := m[k]; ok {
 			m[k] = toInt(v)
 		}
 	}
 	if ti, ok := m["token_info"].(map[string]any); ok {
-		for _, k := range []string{"payment_currency", "payment_token_type", "asset_token_type", "asset_token_amount", "payment_token_amount"} {
+		for _, k := range []string{"payment_currency", "payment_lock_type", "asset_lock_type", "asset_token_amount", "payment_token_amount"} {
 			if v, ok2 := ti[k]; ok2 {
 				ti[k] = toInt(v)
 			}
