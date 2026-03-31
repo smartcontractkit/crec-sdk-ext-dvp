@@ -28,7 +28,7 @@ type DecodedEvent struct {
 
 // EventName returns the parsed event name from the payload.
 func (e DecodedEvent) EventName() events.EventName {
-	verifiableEvent, err := workflows.DecodeVerifiableEvent(e.WatcherEventPayload.VerifiableEvent)
+	verifiableEvent, err := workflows.DecodeVerifiableEvent(e.VerifiableEvent)
 	if err != nil || verifiableEvent == nil {
 		return events.EventUnknown
 	}

@@ -5,6 +5,7 @@ package operations
 import (
 	"fmt"
 	"log/slog"
+	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -14,12 +15,21 @@ type Options struct {
 	Logger         *slog.Logger
 	AccountAddress string
 
+	// Deadline is the default deadline applied to every prepared operation.
+	// If nil, the SDK emits deadline 0 so the field is always present in the
+	// signed payload while remaining backwards-compatible with no-expiry flows.
+	Deadline *big.Int
+
 	CCIPDVPCoordinatorAddress string
 }
 
 func (o *Options) validate() error {
 	if !common.IsHexAddress(o.AccountAddress) {
 		return fmt.Errorf("invalid AccountAddress: %q", o.AccountAddress)
+	}
+
+	if o.Deadline != nil && o.Deadline.Sign() < 0 {
+		return fmt.Errorf("invalid Deadline: must be >= 0")
 	}
 
 	if !common.IsHexAddress(o.CCIPDVPCoordinatorAddress) {
@@ -33,6 +43,7 @@ func (o *Options) validate() error {
 type Extension struct {
 	logger                    *slog.Logger
 	accountAddress            common.Address
+	defaultDeadline           *big.Int
 	ccipdvpCoordinatorAddress common.Address
 }
 
@@ -56,6 +67,7 @@ func New(opts *Options) (*Extension, error) {
 	return &Extension{
 		logger:                    logger,
 		accountAddress:            common.HexToAddress(opts.AccountAddress),
+		defaultDeadline:           cloneBigInt(opts.Deadline),
 		ccipdvpCoordinatorAddress: common.HexToAddress(opts.CCIPDVPCoordinatorAddress),
 	}, nil
 }

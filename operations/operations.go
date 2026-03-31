@@ -184,6 +184,7 @@ func (e *Extension) prepareSettlementOperation(
 
 	return &transactTypes.Operation{
 		ID:           crypto.Keccak256Hash(append(settlementHash[:], []byte(operationName)...)).Big(),
+		Deadline:     e.operationDeadline(),
 		Account:      e.accountAddress,
 		Transactions: transactions,
 	}, nil
