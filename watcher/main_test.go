@@ -71,36 +71,36 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 		}
 
 		type Settlement struct {
-			CcipCallbackGasLimit *big.Int `abi:"CcipCallbackGasLimit"`
-			Data                 []byte   `abi:"Data"`
-			DeliveryInfo         struct {
-				AssetDestinationChainSelector   uint64 `abi:"AssetDestinationChainSelector"`
-				AssetSourceChainSelector        uint64 `abi:"AssetSourceChainSelector"`
-				PaymentDestinationChainSelector uint64 `abi:"PaymentDestinationChainSelector"`
-				PaymentSourceChainSelector      uint64 `abi:"PaymentSourceChainSelector"`
-			} `abi:"DeliveryInfo"`
-			ExecuteAfter *big.Int `abi:"ExecuteAfter"`
-			Expiration   *big.Int `abi:"Expiration"`
+			SettlementId *big.Int `abi:"settlementId"`
 			PartyInfo    struct {
-				BuyerDestinationAddress  []byte `abi:"BuyerDestinationAddress"`
-				BuyerSourceAddress       []byte `abi:"BuyerSourceAddress"`
-				ExecutorAddress          []byte `abi:"ExecutorAddress"`
-				SellerDestinationAddress []byte `abi:"SellerDestinationAddress"`
-				SellerSourceAddress      []byte `abi:"SellerSourceAddress"`
-			} `abi:"PartyInfo"`
-			SecretHash   [32]byte `abi:"SecretHash"`
-			SettlementId *big.Int `abi:"SettlementId"`
-		TokenInfo    struct {
-			AssetLockType                  uint8    `abi:"AssetLockType"`
-			AssetTokenAmount               *big.Int `abi:"AssetTokenAmount"`
-			AssetTokenDestinationAddress   []byte   `abi:"AssetTokenDestinationAddress"`
-			AssetTokenSourceAddress        []byte   `abi:"AssetTokenSourceAddress"`
-			PaymentCurrency                uint8    `abi:"PaymentCurrency"`
-			PaymentLockType                uint8    `abi:"PaymentLockType"`
-			PaymentTokenAmount             *big.Int `abi:"PaymentTokenAmount"`
-			PaymentTokenDestinationAddress []byte   `abi:"PaymentTokenDestinationAddress"`
-			PaymentTokenSourceAddress      []byte   `abi:"PaymentTokenSourceAddress"`
-		} `abi:"TokenInfo"`
+				BuyerSourceAddress      common.Address `abi:"buyerSourceAddress"`
+				BuyerDestinationAddress common.Address `abi:"buyerDestinationAddress"`
+				SellerSourceAddress     common.Address `abi:"sellerSourceAddress"`
+				SellerDestAddress       common.Address `abi:"sellerDestinationAddress"`
+				ExecutorAddress         common.Address `abi:"executorAddress"`
+			} `abi:"partyInfo"`
+			TokenInfo struct {
+				PaymentTokenSourceAddress      common.Address `abi:"paymentTokenSourceAddress"`
+				PaymentTokenDestinationAddress common.Address `abi:"paymentTokenDestinationAddress"`
+				AssetTokenSourceAddress        common.Address `abi:"assetTokenSourceAddress"`
+				AssetTokenDestinationAddress   common.Address `abi:"assetTokenDestinationAddress"`
+				PaymentTokenAmount             *big.Int       `abi:"paymentTokenAmount"`
+				AssetTokenAmount               *big.Int       `abi:"assetTokenAmount"`
+				PaymentCurrency                uint8          `abi:"paymentCurrency"`
+				PaymentLockType                uint8          `abi:"paymentLockType"`
+				AssetLockType                  uint8          `abi:"assetLockType"`
+			} `abi:"tokenInfo"`
+			DeliveryInfo struct {
+				PaymentSourceChainSelector      uint64 `abi:"paymentSourceChainSelector"`
+				PaymentDestinationChainSelector uint64 `abi:"paymentDestinationChainSelector"`
+				AssetSourceChainSelector        uint64 `abi:"assetSourceChainSelector"`
+				AssetDestinationChainSelector   uint64 `abi:"assetDestinationChainSelector"`
+			} `abi:"deliveryInfo"`
+			SecretHash           [32]byte `abi:"secretHash"`
+			ExecuteAfter         *big.Int `abi:"executeAfter"`
+			Expiration           *big.Int `abi:"expiration"`
+			CcipCallbackGasLimit uint32   `abi:"ccipCallbackGasLimit"`
+			Data                 []byte   `abi:"data"`
 		}
 
 		secretHashBytes := common.HexToHash("0xabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef").Bytes()
@@ -108,57 +108,57 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 		copy(secretHash[:], secretHashBytes)
 
 		settlement := Settlement{
-			CcipCallbackGasLimit: big.NewInt(50000),
-			Data:                 []byte{0x01, 0x02, 0x03},
-			DeliveryInfo: struct {
-				AssetDestinationChainSelector   uint64 `abi:"AssetDestinationChainSelector"`
-				AssetSourceChainSelector        uint64 `abi:"AssetSourceChainSelector"`
-				PaymentDestinationChainSelector uint64 `abi:"PaymentDestinationChainSelector"`
-				PaymentSourceChainSelector      uint64 `abi:"PaymentSourceChainSelector"`
-			}{
-				AssetDestinationChainSelector:   1,
-				AssetSourceChainSelector:        2,
-				PaymentDestinationChainSelector: 3,
-				PaymentSourceChainSelector:      4,
-			},
-			ExecuteAfter: big.NewInt(1000),
-			Expiration:   big.NewInt(2000),
-			PartyInfo: struct {
-				BuyerDestinationAddress  []byte `abi:"BuyerDestinationAddress"`
-				BuyerSourceAddress       []byte `abi:"BuyerSourceAddress"`
-				ExecutorAddress          []byte `abi:"ExecutorAddress"`
-				SellerDestinationAddress []byte `abi:"SellerDestinationAddress"`
-				SellerSourceAddress      []byte `abi:"SellerSourceAddress"`
-			}{
-				BuyerDestinationAddress:  common.HexToAddress("0x5555555555555555555555555555555555555555").Bytes(),
-				BuyerSourceAddress:       common.HexToAddress("0x6666666666666666666666666666666666666666").Bytes(),
-				ExecutorAddress:          common.HexToAddress("0x9999999999999999999999999999999999999999").Bytes(),
-				SellerDestinationAddress: common.HexToAddress("0x7777777777777777777777777777777777777777").Bytes(),
-				SellerSourceAddress:      common.HexToAddress("0x8888888888888888888888888888888888888888").Bytes(),
-			},
-			SecretHash:   secretHash,
 			SettlementId: big.NewInt(123),
-		TokenInfo: struct {
-			AssetLockType                  uint8    `abi:"AssetLockType"`
-			AssetTokenAmount               *big.Int `abi:"AssetTokenAmount"`
-			AssetTokenDestinationAddress   []byte   `abi:"AssetTokenDestinationAddress"`
-			AssetTokenSourceAddress        []byte   `abi:"AssetTokenSourceAddress"`
-			PaymentCurrency                uint8    `abi:"PaymentCurrency"`
-			PaymentLockType                uint8    `abi:"PaymentLockType"`
-			PaymentTokenAmount             *big.Int `abi:"PaymentTokenAmount"`
-			PaymentTokenDestinationAddress []byte   `abi:"PaymentTokenDestinationAddress"`
-			PaymentTokenSourceAddress      []byte   `abi:"PaymentTokenSourceAddress"`
-		}{
-			AssetLockType:                  1,
-			AssetTokenAmount:               big.NewInt(100),
-			AssetTokenDestinationAddress:   common.HexToAddress("0x2222222222222222222222222222222222222222").Bytes(),
-			AssetTokenSourceAddress:        common.HexToAddress("0x1111111111111111111111111111111111111111").Bytes(),
-			PaymentCurrency:                0,
-			PaymentLockType:                2,
-			PaymentTokenAmount:             big.NewInt(200),
-			PaymentTokenDestinationAddress: common.HexToAddress("0x4444444444444444444444444444444444444444").Bytes(),
-			PaymentTokenSourceAddress:      common.HexToAddress("0x3333333333333333333333333333333333333333").Bytes(),
-		},
+			PartyInfo: struct {
+				BuyerSourceAddress      common.Address `abi:"buyerSourceAddress"`
+				BuyerDestinationAddress common.Address `abi:"buyerDestinationAddress"`
+				SellerSourceAddress     common.Address `abi:"sellerSourceAddress"`
+				SellerDestAddress       common.Address `abi:"sellerDestinationAddress"`
+				ExecutorAddress         common.Address `abi:"executorAddress"`
+			}{
+				BuyerSourceAddress:      common.HexToAddress("0x6666666666666666666666666666666666666666"),
+				BuyerDestinationAddress: common.HexToAddress("0x5555555555555555555555555555555555555555"),
+				SellerSourceAddress:     common.HexToAddress("0x8888888888888888888888888888888888888888"),
+				SellerDestAddress:       common.HexToAddress("0x7777777777777777777777777777777777777777"),
+				ExecutorAddress:         common.HexToAddress("0x9999999999999999999999999999999999999999"),
+			},
+			TokenInfo: struct {
+				PaymentTokenSourceAddress      common.Address `abi:"paymentTokenSourceAddress"`
+				PaymentTokenDestinationAddress common.Address `abi:"paymentTokenDestinationAddress"`
+				AssetTokenSourceAddress        common.Address `abi:"assetTokenSourceAddress"`
+				AssetTokenDestinationAddress   common.Address `abi:"assetTokenDestinationAddress"`
+				PaymentTokenAmount             *big.Int       `abi:"paymentTokenAmount"`
+				AssetTokenAmount               *big.Int       `abi:"assetTokenAmount"`
+				PaymentCurrency                uint8          `abi:"paymentCurrency"`
+				PaymentLockType                uint8          `abi:"paymentLockType"`
+				AssetLockType                  uint8          `abi:"assetLockType"`
+			}{
+				PaymentTokenSourceAddress:      common.HexToAddress("0x3333333333333333333333333333333333333333"),
+				PaymentTokenDestinationAddress: common.HexToAddress("0x4444444444444444444444444444444444444444"),
+				AssetTokenSourceAddress:        common.HexToAddress("0x1111111111111111111111111111111111111111"),
+				AssetTokenDestinationAddress:   common.HexToAddress("0x2222222222222222222222222222222222222222"),
+				PaymentTokenAmount:             big.NewInt(200),
+				AssetTokenAmount:               big.NewInt(100),
+				PaymentCurrency:                0,
+				PaymentLockType:                2,
+				AssetLockType:                  1,
+			},
+			DeliveryInfo: struct {
+				PaymentSourceChainSelector      uint64 `abi:"paymentSourceChainSelector"`
+				PaymentDestinationChainSelector uint64 `abi:"paymentDestinationChainSelector"`
+				AssetSourceChainSelector        uint64 `abi:"assetSourceChainSelector"`
+				AssetDestinationChainSelector   uint64 `abi:"assetDestinationChainSelector"`
+			}{
+				PaymentSourceChainSelector:      4,
+				PaymentDestinationChainSelector: 3,
+				AssetSourceChainSelector:        2,
+				AssetDestinationChainSelector:   1,
+			},
+			SecretHash:           secretHash,
+			ExecuteAfter:         big.NewInt(1000),
+			Expiration:           big.NewInt(2000),
+			CcipCallbackGasLimit: 50000,
+			Data:                 []byte{0x01, 0x02, 0x03},
 		}
 
 		packed, err := getSettMethod.Outputs.Pack(settlement)
@@ -249,7 +249,11 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 				return int64(t), nil
 			case int:
 				return int64(t), nil
-			case int32:
+			case uint8:
+				return int64(t), nil
+			case uint16:
+				return int64(t), nil
+			case uint32:
 				return int64(t), nil
 			default:
 				return 0, fmt.Errorf("cannot convert %T to int64", v)
