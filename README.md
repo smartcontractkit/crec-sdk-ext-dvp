@@ -1,6 +1,6 @@
 # CREC SDK Extension: DVP
 
-A Go SDK extension for Delivery versus Payment (DvP) settlement operations on CREC. The DvP (Delivery vs. Payment) service allows for the secure and trustless transfer of assets between parties.
+A Go SDK extension for Delivery versus Payment (DvP) settlement operations on CRE Connect. The DvP (Delivery vs. Payment) service allows for the secure and trustless transfer of assets between parties.
 
 ## Installation
 
@@ -162,4 +162,4 @@ case events.EventSettlementSettled:
 
 ## License
 
-[MIT](LICENSE.md)
+[BUSL](LICENSE)
