@@ -4,10 +4,10 @@ version: "3"
 # CREC SDK Extension: DVP - Taskfile
 # =============================================================================
 # Testing and watcher workflow management tasks.
+silent: true
 
 tasks:
   default:
-    silent: true
     desc: "List all available tasks"
     cmds:
       - task --list
@@ -17,7 +17,6 @@ tasks:
   # -------------------------------------------------------------
 
   tools:
-    silent: true
     desc: "Install required build tools"
     cmds:
       - echo "📦 Installing build tools..."
@@ -25,13 +24,11 @@ tasks:
       - echo "✅ Tools installed"
 
   test:
-    silent: true
     desc: "Run all tests"
     cmds:
       - go test ./...
 
   deps:
-    silent: true
     desc: "Update dependencies"
     cmds:
       - echo "📦 Updating deps..."
@@ -40,7 +37,6 @@ tasks:
       - echo "✅ Dependencies updated"
 
   vendor:
-    silent: true
     desc: "Update vendor directory"
     cmds:
       - echo "📦 Updating vendor directory..."
@@ -55,7 +51,6 @@ tasks:
 
   watcher:build:
     desc: "Build watcher WASM binary (BYOW pattern)"
-    silent: true
     cmds:
       - echo "🔧 Building watcher WASM binary..."
       - cd watcher && make build
@@ -71,7 +66,6 @@ tasks:
 
   watcher:check:sizes:
     desc: "Check WASM binary and config sizes against CRE limits"
-    silent: true
     vars:
       WASM_LIMIT_MB: 100
       WASM_COMPRESSED_LIMIT_MB: 20
@@ -128,7 +122,6 @@ tasks:
 
   watcher:verify:committed:
     desc: "SHA256 of bundle/binary.wasm.br.b64 vs git HEAD (run after watcher:build)"
-    silent: false
     cmds:
       - |
         set -euo pipefail
@@ -159,7 +152,6 @@ tasks:
 
   pr-checks:
     desc: "Pre-PR: go test + WASM build + verify .br.b64 vs HEAD + size limits (same as CI watcher-artifacts)"
-    silent: false
     cmds:
       - go test ./...
       - task: watcher:build
@@ -172,7 +164,6 @@ tasks:
 
   watcher:config:
     desc: "Render watcher config.yaml and workflow.yaml via gomplate"
-    silent: true
     vars:
       VALUES_FILE: '{{ .VALUES_FILE | default "values/values.yaml" }}'
       WF_NAME_OVERRIDE: '{{ .WF_NAME_OVERRIDE | default "" }}'
@@ -204,7 +195,6 @@ tasks:
 
   watcher:simulate:
     desc: "Simulate watcher workflow with CRE CLI"
-    silent: true
     vars:
       TARGET: '{{ .TARGET | default "local-simulation" }}'
       TX_HASH: '{{ .TX_HASH }}'
@@ -226,7 +216,6 @@ tasks:
 
   watcher:deploy:
     desc: "Deploy watcher workflow to CRE"
-    silent: true
     deps: [watcher:check:cre-api-key]
     vars:
       CRE_TARGET: '{{ .CRE_TARGET | default "staging" }}'
@@ -238,7 +227,6 @@ tasks:
 
   watcher:release:
     desc: "Config and deploy watcher to CRE"
-    silent: true
     vars:
       VALUES_FILE: '{{ .VALUES_FILE | default "values/values.yaml" }}'
       WF_NAME_OVERRIDE: '{{ .WF_NAME_OVERRIDE | default "" }}'
@@ -251,7 +239,6 @@ tasks:
 
   watcher:clean:
     desc: "Clean watcher workflow artifacts"
-    silent: true
     cmds:
       - |
         cd watcher && \
@@ -265,7 +252,6 @@ tasks:
   watcher:check:cre-api-key:
     desc: "Check if CRE_API_KEY environment variable is set"
     internal: true
-    silent: true
     cmds:
       - |
         if [ -z "${CRE_API_KEY:-}" ]; then
@@ -277,7 +263,6 @@ tasks:
   watcher:check:cre-eth-private-key:
     desc: "Check if CRE_ETH_PRIVATE_KEY environment variable is set"
     internal: true
-    silent: true
     cmds:
       - |
         if [ -z "${CRE_ETH_PRIVATE_KEY:-}" ]; then
@@ -287,7 +272,6 @@ tasks:
 
   watcher:account:link-key:
     desc: "Link wallet address to CRE account"
-    silent: true
     deps: [watcher:check:cre-api-key, watcher:check:cre-eth-private-key]
     vars:
       CRE_TARGET: '{{ .CRE_TARGET | default "staging" }}'
