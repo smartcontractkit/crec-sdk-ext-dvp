@@ -1,5 +1,4 @@
-# Post-WASM brotli+base64 steps match crec-courier-service/workflows/operation-writer/Makefile
-# (fixed quality -q 6, openssl base64 -A) so local/CI/prod hashes of binary.wasm.br.b64 stay aligned.
+# Build wasip1 WASM then pack with brotli + base64 (matching courier CI recipe)
 .PHONY: build
 
 build:

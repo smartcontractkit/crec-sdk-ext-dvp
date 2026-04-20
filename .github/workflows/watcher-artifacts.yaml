@@ -33,6 +33,7 @@ jobs:
 
       - name: Install brotli 1.2.0
         run: |
+          sudo apt-get update
           sudo apt-get install -y cmake build-essential wget
           BROTLI_VERSION=1.2.0
           cd /tmp
