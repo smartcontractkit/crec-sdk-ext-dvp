@@ -1,0 +1,98 @@
+name: watcher-artifacts
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git line endings
+        run: |
+          git config core.autocrlf false
+          git config core.eol lf
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Install Task
+        run: sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+
+      - name: Install bc
+        run: sudo apt-get update && sudo apt-get install -y bc
+
+      - name: Install brotli 1.2.0
+        run: |
+          sudo apt-get install -y cmake build-essential wget
+          BROTLI_VERSION=1.2.0
+          cd /tmp
+          wget -q https://github.com/google/brotli/archive/v${BROTLI_VERSION}.tar.gz
+          tar -xzf v${BROTLI_VERSION}.tar.gz
+          cd brotli-${BROTLI_VERSION}
+          mkdir out && cd out
+          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr ..
+          cmake --build . --config Release
+          sudo cmake --build . --config Release --target install
+          sudo ldconfig
+          brotli --version
+
+      - name: Build watcher WASM
+        run: |
+          set -euo pipefail
+          EXPECTED_GO_VERSION=$(grep '^go ' go.mod | awk '{print $2}')
+          ACTUAL_GO_VERSION=$(go version | awk '{print $3}' | sed 's/go//')
+          if [ "$EXPECTED_GO_VERSION" != "$ACTUAL_GO_VERSION" ]; then
+            echo "❌ Go version mismatch: expected $EXPECTED_GO_VERSION (go.mod), actual $ACTUAL_GO_VERSION"
+            exit 1
+          fi
+          go clean -cache
+          go mod download
+          task watcher:build
+
+      - name: Verify committed WASM matches build
+        run: |
+          set -euo pipefail
+          failed=0
+          for f in watcher/bundle/binary.wasm watcher/bundle/binary.wasm.br.b64
+          do
+            echo ""
+            echo "Checking $f..."
+            if [ ! -f "$f" ]; then
+              echo "❌ Missing file after build: $f"
+              failed=1
+              continue
+            fi
+            if ! git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
+              echo "❌ $f is not tracked by git — add and commit it"
+              failed=1
+              continue
+            fi
+            built_hash=$(sha256sum "$f" | awk '{print $1}')
+            committed_hash=$(git show HEAD:"$f" | sha256sum | awk '{print $1}')
+            if [ "$built_hash" != "$committed_hash" ]; then
+              echo "❌ $f does not match the committed version in git"
+              echo "   Rebuild and commit:"
+              echo "     task watcher:build"
+              echo "     git add watcher/bundle/binary.wasm watcher/bundle/binary.wasm.br.b64"
+              echo "   If hashes still differ, align Go $(grep '^go ' go.mod | awk '{print $2}') and brotli 1.2.0 with CI."
+              failed=1
+            else
+              echo "✅ $f OK ($built_hash)"
+            fi
+          done
+          if [ "$failed" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Check WASM and config sizes
+        run: task watcher:check:sizes
