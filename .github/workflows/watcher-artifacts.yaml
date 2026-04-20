@@ -63,7 +63,8 @@ jobs:
         run: |
           set -euo pipefail
           failed=0
-          for f in watcher/bundle/binary.wasm watcher/bundle/binary.wasm.br.b64
+          # Only binary.wasm.br.b64 is tracked; binary.wasm is gitignored
+          for f in watcher/bundle/binary.wasm.br.b64
           do
             echo ""
             echo "Checking $f..."
@@ -83,7 +84,7 @@ jobs:
               echo "❌ $f does not match the committed version in git"
               echo "   Rebuild and commit:"
               echo "     task watcher:build"
-              echo "     git add watcher/bundle/binary.wasm watcher/bundle/binary.wasm.br.b64"
+              echo "     git add watcher/bundle/binary.wasm.br.b64"
               echo "   If hashes still differ, align Go $(grep '^go ' go.mod | awk '{print $2}') and brotli 1.2.0 with CI."
               failed=1
             else

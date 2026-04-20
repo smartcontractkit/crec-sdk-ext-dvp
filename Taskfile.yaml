@@ -126,6 +126,46 @@ tasks:
 
         echo "✅ All sizes within CRE limits"
 
+  watcher:verify:committed:
+    desc: "SHA256 of bundle/binary.wasm.br.b64 vs git HEAD (run after watcher:build)"
+    silent: false
+    cmds:
+      - |
+        set -euo pipefail
+        if ! git rev-parse --git-dir >/dev/null 2>&1; then
+          echo "❌ Not a git repository"
+          exit 1
+        fi
+        f=watcher/bundle/binary.wasm.br.b64
+        echo "Checking $f..."
+        if [ ! -f "$f" ]; then
+          echo "❌ Missing: $f — run: task watcher:build"
+          exit 1
+        fi
+        if ! git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
+          echo "❌ $f not tracked by git"
+          exit 1
+        fi
+        built=$(sha256sum "$f" | awk '{print $1}')
+        committed=$(git show HEAD:"$f" | sha256sum | awk '{print $1}')
+        if [ "$built" != "$committed" ]; then
+          echo "❌ Hash mismatch vs HEAD"
+          echo "   built:     $built"
+          echo "   committed: $committed"
+          echo "   Fix: task watcher:build && git add watcher/bundle/binary.wasm.br.b64"
+          exit 1
+        fi
+        echo "✅ $f OK"
+
+  pr-checks:
+    desc: "Pre-PR: go test + WASM build + verify .br.b64 vs HEAD + size limits (same as CI watcher-artifacts)"
+    silent: false
+    cmds:
+      - go test ./...
+      - task: watcher:build
+      - task: watcher:verify:committed
+      - task: watcher:check:sizes
+
   # -------------------------------------------------------------
   # ---------------- Watcher Workflow Tasks ---------------------
   # -------------------------------------------------------------
