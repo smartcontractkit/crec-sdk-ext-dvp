@@ -1,4 +1,4 @@
-# Build wasip1 WASM then pack with brotli + base64 (matching courier CI recipe)
+# Build wasip1 WASM then pack with brotli + base64
 .PHONY: build
 
 build:
