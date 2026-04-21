@@ -1,5 +1,12 @@
+# Build wasip1 WASM then pack with brotli + base64
 .PHONY: build
 
 build:
-	GOOS=wasip1 GOARCH=wasm CGO_ENABLED=0 go build -o bundle/binary.wasm -trimpath -ldflags="-buildid= -w -s" .
-	brotli -c bundle/binary.wasm | base64 > bundle/binary.wasm.br.b64
+	GOOS=wasip1 GOARCH=wasm CGO_ENABLED=0 go build -buildvcs=false -trimpath -ldflags="-buildid= -w -s" -o bundle/binary.wasm .
+	@test -f bundle/binary.wasm || (echo "Error: bundle/binary.wasm was not created" && exit 1)
+	rm -f bundle/binary.wasm.br
+	brotli -q 6 -o bundle/binary.wasm.br bundle/binary.wasm
+	@test -f bundle/binary.wasm.br || (echo "Error: bundle/binary.wasm.br was not created" && exit 1)
+	openssl base64 -A -in bundle/binary.wasm.br -out bundle/binary.wasm.br.b64
+	@test -f bundle/binary.wasm.br.b64 || (echo "Error: bundle/binary.wasm.br.b64 was not created" && exit 1)
+	rm -f bundle/binary.wasm.br
