@@ -120,30 +120,6 @@ tasks:
 
         echo "✅ All sizes within CRE limits"
 
-  watcher:check:artifacts:local:
-    desc: "Hash bundle binary.wasm.br.b64, run task watcher:build, fail if .br.b64 content changed (no git)"
-    silent: false
-    cmds:
-      - |
-        set -eu
-        F=watcher/bundle/binary.wasm.br.b64
-        B=$(if [ -f "$F" ]; then openssl dgst -sha256 "$F" | awk '{print $2}'; else echo __absent__; fi)
-        task watcher:build
-        A=$(openssl dgst -sha256 "$F" | awk '{print $2}')
-        if [ "$B" = "$A" ]; then
-          echo "✅ $F unchanged (reproducible vs on-disk)"
-          exit 0
-        fi
-        echo "❌ $F changed after rebuild — run git add and commit, or match Go + brotli 1.2.0 to CI if unintended."
-        exit 1
-
-  pr-checks:
-    desc: "Pre-PR: go test, local artifact drift check, CRE size limits"
-    cmds:
-      - go test ./...
-      - task: watcher:check:artifacts:local
-      - task: watcher:check:sizes
-
   # -------------------------------------------------------------
   # ---------------- Watcher Workflow Tasks ---------------------
   # -------------------------------------------------------------
