@@ -7,7 +7,7 @@ require (
 	github.com/smartcontractkit/chainlink-protos/cre/go v0.0.0-20260210221717-2546aed27ebe
 	github.com/smartcontractkit/cre-sdk-go v1.2.0
 	github.com/smartcontractkit/cre-sdk-go/capabilities/blockchain/evm v0.10.0
-	github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http v0.10.0
+	github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http v1.3.0
 	github.com/smartcontractkit/crec-api-go v0.6.5
 	github.com/smartcontractkit/crec-sdk v0.6.7
 	github.com/smartcontractkit/crec-workflow-utils v0.0.16
