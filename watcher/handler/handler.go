@@ -10,6 +10,7 @@ import (
 	gethAbi "github.com/ethereum/go-ethereum/accounts/abi"
 	gethCommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/smartcontractkit/crec-api-go/models"
 
 	"github.com/smartcontractkit/cre-sdk-go/capabilities/blockchain/evm"
 	"github.com/smartcontractkit/cre-sdk-go/cre"
@@ -64,7 +65,7 @@ const DVPGetSettlementABI = `[
 // OnLog processes DVP settlement logs:
 // - Performs an EVM view call getSettlement(bytes32) and decodes the returned Settlement for metadata
 // - Composes a verifiable event, signs it, and posts it to the CREC API
-func OnLog(cfg *wfcommon.Config, rt cre.Runtime, payload *evm.Log) (string, error) {
+func OnLog(cfg *wfcommon.Config, rt cre.Runtime, payload *evm.Log, confidence models.EVMEventConfidence) (string, error) {
 	selector := cfg.ChainSelector
 
 	if len(payload.Topics) < 3 {
@@ -85,7 +86,7 @@ func OnLog(cfg *wfcommon.Config, rt cre.Runtime, payload *evm.Log) (string, erro
 		dvpMeta = fixDVPTypes(dvpSanitised)
 	}
 
-	evmEvent, err := wfcommon.BuildEVMEventFromLog(rt, cfg, payload)
+	evmEvent, err := wfcommon.BuildEVMEventFromLog(rt, cfg, payload, confidence)
 	if err != nil {
 		return "", err
 	}

@@ -13,6 +13,7 @@ import (
 	gethAbi "github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/smartcontractkit/crec-api-go/models"
 	"github.com/stretchr/testify/require"
 
 	"github.com/smartcontractkit/chainlink-protos/cre/go/values/pb"
@@ -23,6 +24,7 @@ import (
 	"github.com/smartcontractkit/cre-sdk-go/cre/testutils"
 
 	wfcommon "github.com/smartcontractkit/crec-workflow-utils"
+
 	wf "github.com/smartcontractkit/crec-sdk-ext-dvp/watcher/handler"
 )
 
@@ -32,11 +34,9 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 	rt := testutils.NewRuntime(t, testutils.Secrets{})
 
 	cfg := &wfcommon.Config{
-		ChainID:         "1337",
-		ChainSelector:   "123456",
-		CourierURL:      "http://example.com",
-		Service:         ptr("dvp"),
-		ConfidenceLevel: "finalized",
+		ChainSelector: "123456",
+		CourierURL:    "http://example.com",
+		Service:       ptr("dvp"),
 		DetectEventTriggerConfig: wfcommon.DetectEventTriggerConfig{
 			ContractName:       "CCIPDVPCoordinator",
 			ContractEventNames: []string{"SettlementAccepted"},
@@ -316,6 +316,6 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 		Index:       0,
 	}
 
-	_, err = wf.OnLog(cfg, rt, log)
+	_, err = wf.OnLog(cfg, rt, log, models.Latest)
 	require.NoError(t, err)
 }
