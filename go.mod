@@ -8,9 +8,9 @@ require (
 	github.com/smartcontractkit/cre-sdk-go v1.11.0
 	github.com/smartcontractkit/cre-sdk-go/capabilities/blockchain/evm v0.10.0
 	github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http v1.3.0
-	github.com/smartcontractkit/crec-api-go v0.7.0-rc9.0.20260527234238-74f4cbf43385
-	github.com/smartcontractkit/crec-sdk v0.7.0-rc7.0.20260527225421-c3dd2b119862
-	github.com/smartcontractkit/crec-workflow-utils v0.0.18-0.20260527221510-f875120a27ec
+	github.com/smartcontractkit/crec-api-go v0.7.0-rc9.0.20260528174603-2642fafc10dd
+	github.com/smartcontractkit/crec-sdk v0.7.0-rc7.0.20260528175247-85f9e4b97db7
+	github.com/smartcontractkit/crec-workflow-utils v0.0.18-0.20260528174718-97b8ea8c1afd
 	github.com/stretchr/testify v1.11.1
 )
 

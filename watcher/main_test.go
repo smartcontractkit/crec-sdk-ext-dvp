@@ -316,6 +316,6 @@ func Test_DVPEvent_HTTP_Post_WithCREReportSigs(t *testing.T) {
 		Index:       0,
 	}
 
-	_, err = wf.OnLog(cfg, rt, log, models.Latest)
+	_, err = wf.OnLog(cfg, rt, log, models.ConfidenceLevelLatest)
 	require.NoError(t, err)
 }
