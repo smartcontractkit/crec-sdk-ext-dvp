@@ -109,6 +109,7 @@ func OnLog(cfg *wfcommon.Config, rt cre.Runtime, payload *evm.Log, confidence mo
 	}
 
 	verifiableEvent, err := wfcommon.BuildVerifiableEventForEVMEvent(
+		rt,
 		cfg,
 		evmEvent,
 		cfg.Service,
@@ -121,7 +122,7 @@ func OnLog(cfg *wfcommon.Config, rt cre.Runtime, payload *evm.Log, confidence mo
 
 	rt.Logger().Info("posting verifiable event", "eventName", eventName, "settlementId", settlementID.String(), "hasMetadata", len(dvpMeta) > 0)
 
-	return wfcommon.SignAndPostVerifiableEvent(cfg, rt, verifiableEvent)
+	return wfcommon.SignAndPostVerifiableEvent(rt, cfg, verifiableEvent)
 }
 
 func fetchAndDecodeSettlement(rt cre.Runtime, selector string, contractAddr string, hash []byte) (map[string]any, error) {
