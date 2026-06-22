@@ -9,7 +9,7 @@ require (
 	github.com/smartcontractkit/cre-sdk-go/capabilities/blockchain/evm v0.10.0
 	github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http v1.3.0
 	github.com/smartcontractkit/crec-api-go v0.7.3
-	github.com/smartcontractkit/crec-sdk v0.7.3
+	github.com/smartcontractkit/crec-sdk v0.7.6
 	github.com/smartcontractkit/crec-workflow-utils v0.1.3
 	github.com/stretchr/testify v1.11.1
 )
@@ -62,5 +62,3 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
