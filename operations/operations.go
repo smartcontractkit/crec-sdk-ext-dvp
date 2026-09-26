@@ -85,9 +85,21 @@ func (e *Extension) PrepareProposeSettlementWithTokenHoldOperation(
 
 // HashSettlement computes the hash of a DvP settlement.
 func HashSettlement(settlement *events.Settlement) (common.Hash, error) {
+	if settlement == nil {
+		return common.Hash{}, fmt.Errorf("settlement is required")
+	}
+	if settlement.SettlementId == nil ||
+		settlement.TokenInfo.PaymentTokenAmount == nil ||
+		settlement.TokenInfo.AssetTokenAmount == nil ||
+		settlement.ExecuteAfter == nil ||
+		settlement.Expiration == nil {
+		return common.Hash{}, fmt.Errorf("settlement id, token amounts, executeAfter and expiration must be set")
+	}
+
 	uint256Ty, _ := abi.NewType("uint256", "", nil)
 	uint64Ty, _ := abi.NewType("uint64", "", nil)
 	uint48Ty, _ := abi.NewType("uint48", "", nil)
+	uint32Ty, _ := abi.NewType("uint32", "", nil)
 	uint8Ty, _ := abi.NewType("uint8", "", nil)
 	addressTy, _ := abi.NewType("address", "", nil)
 	bytes32Ty, _ := abi.NewType("bytes32", "", nil)
@@ -108,16 +120,17 @@ func HashSettlement(settlement *events.Settlement) (common.Hash, error) {
 	}
 
 	tokenInfoArgs := abi.Arguments{
-		{Type: uint256Ty}, {Type: uint256Ty}, {Type: addressTy}, {Type: addressTy},
-		{Type: addressTy}, {Type: addressTy}, {Type: uint8Ty}, {Type: uint8Ty},
+		{Type: addressTy}, {Type: addressTy}, {Type: addressTy}, {Type: addressTy},
+		{Type: uint256Ty}, {Type: uint256Ty}, {Type: uint8Ty}, {Type: uint8Ty}, {Type: uint8Ty},
 	}
 	tokenInfoData, err := tokenInfoArgs.Pack(
-		settlement.TokenInfo.PaymentTokenAmount,
-		settlement.TokenInfo.AssetTokenAmount,
 		settlement.TokenInfo.PaymentTokenSourceAddress,
 		settlement.TokenInfo.PaymentTokenDestinationAddress,
 		settlement.TokenInfo.AssetTokenSourceAddress,
 		settlement.TokenInfo.AssetTokenDestinationAddress,
+		settlement.TokenInfo.PaymentTokenAmount,
+		settlement.TokenInfo.AssetTokenAmount,
+		settlement.TokenInfo.PaymentCurrency,
 		settlement.TokenInfo.PaymentLockType,
 		settlement.TokenInfo.AssetLockType,
 	)
@@ -144,7 +157,8 @@ func HashSettlement(settlement *events.Settlement) (common.Hash, error) {
 
 	settlementInfoArgs := abi.Arguments{
 		{Type: bytes32Ty}, {Type: uint256Ty}, {Type: bytes32Ty}, {Type: bytes32Ty},
-		{Type: bytes32Ty}, {Type: bytes32Ty}, {Type: uint48Ty}, {Type: bytesTy},
+		{Type: bytes32Ty}, {Type: bytes32Ty}, {Type: uint48Ty}, {Type: uint48Ty},
+		{Type: uint32Ty}, {Type: bytesTy},
 	}
 	settlementInfoData, err := settlementInfoArgs.Pack(
 		crypto.Keccak256Hash([]byte("CCIP_DVP_COORDINATOR_V1_SETTLEMENT")),
@@ -153,7 +167,9 @@ func HashSettlement(settlement *events.Settlement) (common.Hash, error) {
 		tokenInfoHash,
 		deliveryDataHash,
 		settlement.SecretHash,
+		settlement.ExecuteAfter,
 		settlement.Expiration,
+		settlement.CcipCallbackGasLimit,
 		settlement.Data,
 	)
 	if err != nil {
