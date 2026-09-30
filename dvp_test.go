@@ -89,7 +89,10 @@ func TestOperations_HashSettlement(t *testing.T) {
 
 	hash, err := ext.HashSettlement(settlement)
 	require.NoError(t, err)
-	require.Equal(t, common.HexToHash("0xc36535b1628c991180c156e097d0fa8062c2d1bce2d7bfca8aefe88034005eec"), hash)
+	// Expected value produced by the deployed CCIPDVPCoordinator's
+	// getSettlementHash view (eth-sepolia,
+	// 0xfAe9C0dD04c006003bff626E22880eB3413b92f8) for this settlement.
+	require.Equal(t, common.HexToHash("0x295cf48dbaebfe8f9540e6bf6a19d8bc79881a2c2a90fea3fa7bcb231cd0579f"), hash)
 }
 
 func TestOperations_PrepareProposeSettlementOperation(t *testing.T) {
