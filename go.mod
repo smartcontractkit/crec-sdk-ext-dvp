@@ -1,6 +1,6 @@
 module github.com/smartcontractkit/crec-sdk-ext-dvp
 
-go 1.26.3
+go 1.27.3
 
 require (
 	github.com/ethereum/go-ethereum v1.17.3
@@ -8,9 +8,9 @@ require (
 	github.com/smartcontractkit/cre-sdk-go v1.11.0
 	github.com/smartcontractkit/cre-sdk-go/capabilities/blockchain/evm v0.10.0
 	github.com/smartcontractkit/cre-sdk-go/capabilities/networking/http v1.3.0
-	github.com/smartcontractkit/crec-api-go v0.8.0
-	github.com/smartcontractkit/crec-sdk v0.8.0
-	github.com/smartcontractkit/crec-workflow-utils v0.1.3
+	github.com/smartcontractkit/crec-api-go v0.9.2
+	github.com/smartcontractkit/crec-sdk v0.9.2
+	github.com/smartcontractkit/crec-workflow-utils v0.1.5
 	github.com/stretchr/testify v1.11.1
 )
 
